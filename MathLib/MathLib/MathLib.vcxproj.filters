@@ -21,12 +21,24 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleApplication1.cpp">
+    <ClCompile Include="MathLib.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Double.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="fraction.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
