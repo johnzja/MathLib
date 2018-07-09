@@ -247,7 +247,7 @@ fraction pow(const fraction& frc, const int& n)
 	{
 		return frc_one;
 	}
-	else if (n > 0)
+	else if (n > 0)//Fast power Algorithm
 	{
 		fraction base = frc;
 		fraction ans = frc_one;
