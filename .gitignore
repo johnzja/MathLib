@@ -262,3 +262,5 @@ __pycache__/
 
 #my terms
 targetver.h
+*.vcxproj
+*.filters
