@@ -264,3 +264,4 @@ __pycache__/
 targetver.h
 *.vcxproj
 *.filters
+*.sln
