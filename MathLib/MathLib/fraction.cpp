@@ -8,7 +8,7 @@ const double precision = 1e-10;
 fraction zero = fraction();
 fraction one = fraction(1,1);
 //Constructor
-fraction::fraction(int a, int b)//Constructor of a/b  (unsimplified)
+fraction::fraction(int a, int b) :value(0.0,PREC)//unsimplified. precise.  "value" not evaluated.
 {
 	if (b == 0)throw Exceptions(_Divide_By_Zero);
 	isSimplified = false;
@@ -17,7 +17,7 @@ fraction::fraction(int a, int b)//Constructor of a/b  (unsimplified)
 	denominator = b;
 }
 
-fraction::fraction(Int a, Int b)
+fraction::fraction(Int a, Int b):value(0.0,PREC)//unsimplified. precise. "value" not evaluated.
 {
 	if (b.isZero())throw Exceptions(_Divide_By_Zero);
 	isSimplified = false;
@@ -27,22 +27,18 @@ fraction::fraction(Int a, Int b)
 	//Value not initialized.
 }
 
-
-fraction::fraction(double value) :value(value)
+fraction::fraction(double value) :value(value,14)//From double: precision<=14
 {
 	isApprox = true;
 	isSimplified = true;
 }
 
-fraction::fraction(Int a)
+fraction::fraction(Int a):value(0.0,PREC),denominator(1),numerator(a)
 {
-	denominator = 1;
-	numerator = a;
 	isSimplified = true;
 	isApprox = false;
-	//value = static_cast<double>(a);
 }
-//Return the greatest common factor.
+
 //Simplify a fraction
 fraction simplify(const fraction& a)
 {
@@ -80,11 +76,23 @@ double fraction::GetValue(void)const
 {
 	if (isApprox)
 	{
+		return double(value);
+	}
+	else
+	{
+		return double(Double(numerator, denominator, PREC));
+	}
+}
+
+Double fraction::GetValueD(void)const
+{
+	if (isApprox)
+	{
 		return value;
 	}
 	else
 	{
-		return double(Double(numerator, denominator, 24));
+		return Double(numerator, denominator, PREC);
 	}
 }
 
@@ -95,7 +103,6 @@ void fraction::SetValue(double val)
 	isSimplified = true;
 }
 
-
 bool operator==(const fraction& a, const fraction & b)
 {
 	fraction c = simplify(a);
@@ -103,7 +110,7 @@ bool operator==(const fraction& a, const fraction & b)
 	if (c.isApprox == false && d.isApprox == false) return c.denominator == d.denominator && c.numerator == d.numerator;
 	else
 	{
-		return (c.value - d.value) < precision;
+		return (a.value == b.value);
 	}
 }
 

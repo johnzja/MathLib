@@ -449,3 +449,27 @@ Double operator/(const Double& a, const Double& b)
 	ans.exp = ans.exp - a.precision + b.precision + a.exp - b.exp;
 	return ans;
 }
+
+Double pow(Double x, Double y)
+{
+
+}
+
+bool operator==(const Double& a, const Double& b)
+{
+	if (a.exp != b.exp || a.precision != b.precision)
+	{
+		return false;
+	}
+	else
+	{
+		if (a.val == b.val)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}

@@ -2,7 +2,7 @@
 #include "stdafx.h"
 using namespace std;
 
-#define PREC 200
+#define PREC 30
 class Double;
 
 class Math
@@ -83,7 +83,8 @@ public:
 	{
 		return length;
 	}
-	~Int();
+
+	virtual ~Int();
 
 	bool sign;
 private:
@@ -123,10 +124,12 @@ public:
 	friend Double operator-(const Double& a);
 	friend Double operator-(const Double& a, const Double& b);
 	friend Double operator*(const Double& a, const Double& b);
-
-
 	friend Double operator/(const Double& a, const Double& b);
+	friend bool operator==(const Double& a, const Double& b);
 
+	friend Double pow(Double x, Double y);
+
+	virtual ~Double(){}
 
 
 	protected://to be modified.
@@ -142,6 +145,12 @@ Double operator/(const Double& a, const Double& b);
 Double operator-(const Double& a);
 
 
+Double pow(Double x, Double y);
+
+bool operator==(const Double& a, const Double& b);
+
+
+
 
 class fraction :protected Math
 {
@@ -152,17 +161,17 @@ public:
 
 	fraction(double value);
 
-	fraction():numerator(0,1),denominator(1,1) //Default constructor:zero fraction
+	fraction() :numerator(0, 1), denominator(1, 1), value(0.0, PREC)//Default constructor:zero fraction
 	{
 		isSimplified = true;
 		isApprox = false;
-		value = 0.0;
 	}
 
 
 	virtual ~fraction() {}
 
 	double GetValue(void)const;
+	Double GetValueD(void)const;
 	void SetValue(double val);
 	bool& GetApprox() { return isApprox; }
 	bool GetApprox()const { return isApprox; }
@@ -181,7 +190,7 @@ private:
 
 	Int numerator;
 	Int denominator;
-	double value;
+	Double value;
 	bool isApprox;
 	bool isSimplified;
 };
