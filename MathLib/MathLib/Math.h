@@ -127,6 +127,10 @@ public:
 	friend Double operator*(const Double& a, const Double& b);
 	friend Double operator/(const Double& a, const Double& b);
 	friend bool operator==(const Double& a, const Double& b);
+	friend bool operator<(const Double& a, const Double& b);
+	friend bool operator>(const Double& a, const Double& b);
+
+
 
 	friend Double pow(Double x, Double y);
 
@@ -146,9 +150,14 @@ Double operator/(const Double& a, const Double& b);
 Double operator-(const Double& a);
 
 
+
 Double pow(Double x, Double y);
 
+//Comparing operators
 bool operator==(const Double& a, const Double& b);
+bool operator<(const Double& a, const Double& b);
+bool operator>(const Double& a, const Double& b);
+
 
 
 

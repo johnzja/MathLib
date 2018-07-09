@@ -478,3 +478,80 @@ bool operator==(const Double& a, const Double& b)
 		}
 	}
 }
+
+bool operator<(const Double& a, const Double& b)
+{
+	int abs_cmp_result;
+	if (a.val.sign && b.val.sign)
+	{
+		switch (abs_cmp_result = abs_compare(a, b))
+		{
+		case +1:
+			return false;
+		case -1:
+			return true;
+		default:
+			return false;
+		}
+	}
+	else if (a.val.sign && !b.val.sign)//a>=0,b<0
+	{
+		return false;
+	}
+	else if (!a.val.sign && b.val.sign)//a<0, b>=0
+	{
+		return true;
+	}
+	else//a<0,b<0
+	{
+		switch (abs_cmp_result = abs_compare(a, b))
+		{
+		case +1:
+			return true;
+		case -1:
+			return false;
+		default:
+			return false;
+		}
+	}
+
+}
+
+bool operator>(const Double& a, const Double& b)
+{
+	{
+		int abs_cmp_result;
+		if (a.val.sign && b.val.sign)//a>=0,b>=0
+		{
+			switch (abs_cmp_result = abs_compare(a, b))
+			{
+			case +1:
+				return true;
+			case -1:
+				return false;
+			default:
+				return false;
+			}
+		}
+		else if (a.val.sign && !b.val.sign)//a>=0,b<0
+		{
+			return true;
+		}
+		else if (!a.val.sign && b.val.sign)//a<0, b>=0
+		{
+			return false;
+		}
+		else//a<0,b<0
+		{
+			switch (abs_cmp_result = abs_compare(a, b))
+			{
+			case +1:
+				return false;
+			case -1:
+				return true;
+			default:
+				return false;
+			}
+		}
+	}
+}
