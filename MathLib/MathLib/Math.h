@@ -114,6 +114,7 @@ public:
 	operator double() const;
 	
 	friend int abs_compare(const Double& a, const Double& b);
+	bool isZero()const;
 
 
 	//Friends must be limited to necessary operators.
@@ -160,6 +161,7 @@ public:
 	fraction(Int a);
 
 	fraction(double value);
+	fraction(Double value);
 
 	fraction() :numerator(0, 1), denominator(1, 1), value(0.0, PREC)//Default constructor:zero fraction
 	{
@@ -181,6 +183,8 @@ public:
 
 	friend fraction operator+(const fraction& a, const fraction& b);
 	friend fraction operator-(const fraction& a);
+	friend fraction operator-(const fraction& a, const fraction& b);
+
 	friend fraction operator*(const fraction& a, const fraction& b);
 	friend fraction reciprocal(const fraction& a);
 	friend void displayFrac(const fraction& a, bool newline);
@@ -196,6 +200,10 @@ private:
 };
 
 ostream& operator<<(ostream& ost, const fraction& frac);
+fraction operator*(const fraction& a, const fraction& b);
+fraction operator/(const fraction& a, const fraction& b);
+fraction& operator*=(fraction& a, const fraction& b);
+fraction pow(const fraction& frc, const int& n);
 
 
 class Real : protected Math

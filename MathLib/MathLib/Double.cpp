@@ -169,6 +169,10 @@ Double::operator double() const
 	}
 }
 
+bool Double::isZero()const
+{
+	return val.isZero();
+}
 
 
 
@@ -452,7 +456,8 @@ Double operator/(const Double& a, const Double& b)
 
 Double pow(Double x, Double y)
 {
-
+	// to be completed.
+	return x;
 }
 
 bool operator==(const Double& a, const Double& b)

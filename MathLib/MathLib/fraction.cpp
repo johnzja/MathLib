@@ -5,8 +5,9 @@ extern const char*   _Divide_By_Zero;
 extern const char* _Negative_Base;
 const double precision = 1e-10;
 
-fraction zero = fraction();
-fraction one = fraction(1,1);
+fraction frc_zero = fraction();
+fraction frc_one = fraction(1,1);
+Int Int_one = Int(1);
 //Constructor
 fraction::fraction(int a, int b) :value(0.0,PREC)//unsimplified. precise.  "value" not evaluated.
 {
@@ -33,6 +34,13 @@ fraction::fraction(double value) :value(value,14)//From double: precision<=14
 	isSimplified = true;
 }
 
+fraction::fraction(Double value):value(value)
+{
+	isApprox = true;
+	isSimplified = true;
+}
+
+
 fraction::fraction(Int a):value(0.0,PREC),denominator(1),numerator(a)
 {
 	isSimplified = true;
@@ -52,7 +60,7 @@ fraction simplify(const fraction& a)
 	Int i = abs(a.numerator);
 	Int j = abs(a.denominator);
 
-	if (i.isZero()) return zero;
+	if (i.isZero()) return frc_zero;
 								
 	Int d = gcd(i, j); //Assure that i,j !=0
 
@@ -114,23 +122,18 @@ bool operator==(const fraction& a, const fraction & b)
 	}
 }
 
-
 fraction operator+(const fraction& a, const fraction& b)
 {
 
 	if (a.isApprox == false && b.isApprox == false)
 	{
 		if (a.denominator.isZero() || b.denominator.isZero())throw Exceptions(_Divide_By_Zero);
-		fraction ans(a.numerator*b.denominator + a.denominator*b.numerator, a.denominator*b.denominator);//Here: call which constructor?
+		fraction ans = fraction(a.numerator*b.denominator + a.denominator*b.numerator, a.denominator*b.denominator);
 		return simplify(ans);
 	}
 	else
 	{
-		fraction ans;
-		ans.isApprox = true;
-		ans.isSimplified = true;
-		ans.value = a.value + b.value;
-		return ans;
+		return fraction(a.value + b.value);
 	}
 }
 
@@ -143,17 +146,22 @@ fraction operator-(const fraction& a)
 	}
 	else
 	{
-		fraction ans;
-		ans.isApprox = true;
-		ans.isSimplified = true;
-		ans.value = -a.value;
-		return ans;
+		return fraction(-a.value);
 	}
 }
 
 fraction operator-(const fraction& a, const fraction& b)
 {
-	return a + (-b);
+	if (a.isApprox == false && b.isApprox == false)
+	{
+		if (a.denominator.isZero() || b.denominator.isZero())throw Exceptions(_Divide_By_Zero);
+		fraction ans = fraction(a.numerator*b.denominator - a.denominator*b.numerator, a.denominator*b.denominator);
+		return simplify(ans);
+	}
+	else
+	{
+		return fraction(a.value - b.value);
+	}
 }
 
 fraction operator*(const fraction& a, const fraction& b)
@@ -165,11 +173,7 @@ fraction operator*(const fraction& a, const fraction& b)
 	}
 	else
 	{
-		fraction ans;
-		ans.isSimplified = true;
-		ans.isApprox = true;
-		ans.value = a.value * b.value;
-		return ans;
+		return fraction(a.value*b.value);
 	}
 }
 
@@ -190,12 +194,8 @@ fraction reciprocal(const fraction& a)
 	}
 	else
 	{
-		fraction ans;
-		ans.isApprox = true;
-		ans.isSimplified = true;
-		if (abs(a.value) < precision)throw Exceptions(_Divide_By_Zero);
-		ans.value = 1.0 / a.value;
-		return ans;
+		if (a.value.isZero())throw Exceptions(_Divide_By_Zero);
+		return fraction(Double((Int)1, 0) / a.value);
 	}
 }
 
@@ -204,14 +204,12 @@ fraction operator/(const fraction& a, const fraction& b)
 	return a * reciprocal(b);
 }
 
-
 void displayFrac(const fraction& a, bool newline)
 {
 	if (!a.GetApprox())
 	{
 
 		if (a.denominator.isZero())throw Exceptions(_Divide_By_Zero);
-		//a = simplify(a);//Nonsense.
 
 		if (a.numerator.isZero())
 		{
@@ -219,7 +217,7 @@ void displayFrac(const fraction& a, bool newline)
 		}
 		else
 		{
-			if (a.denominator==one)
+			if (a.denominator==Int_one)
 			{
 				cout << a.numerator;
 			}
@@ -231,32 +229,28 @@ void displayFrac(const fraction& a, bool newline)
 	}
 	else
 	{
-		if (abs(a.value) < precision)cout << 0;
-		else
-		{
-			cout << a.value;
-		}
+		cout << a.value;
 	}
 
 	if (newline)
-	{
 		cout << endl;
-	}
 
 }
 
 //Fast power calculation.
 fraction pow(const fraction& frc, const int& n)
 {
+
+	if (frc.GetValue() <= 0)throw Exceptions(_Negative_Base);
+
 	if (n == 0)
 	{
-		if (frc.GetValue() <= 0)throw Exceptions(_Negative_Base);
-		return one;
+		return frc_one;
 	}
 	else if (n > 0)
 	{
 		fraction base = frc;
-		fraction ans = zero;
+		fraction ans = frc_one;
 		int _n = n;
 
 		while (_n)
@@ -269,7 +263,7 @@ fraction pow(const fraction& frc, const int& n)
 	}
 	else
 	{
-		if (frc == zero)throw Exceptions(_Negative_Base);
+		if (frc == frc_zero)throw Exceptions(_Negative_Base);
 		return pow(reciprocal(frc), -n);
 	}
 
