@@ -572,34 +572,64 @@ bool operator>(const Double& a, const Double& b)
 
 //Some Mathmatical Functions.
 Double pow(Double x, int y) {
-	Double result = 1;
-	if (x == (Double)0) return 0;
-	else if (x == (Double)1 || y == 0) return 1;
-	else if (y > 0) {
-		for (int i = 0; i < y; i++) {
-			result = x * result;
+	if (x == (Double)0 && y <= 0) throw MATH_ERREXCEPT; //needs to be Double
+	else if (y == 0) return 1; 
+	else if (y == 1) return x; 
+	else if (x == (Double)0) return 0; //needs to be Double
+	else if (x == (Double)1) return 1; //needs to be Double
+	else if (y > 0) { 
+		Double result = (Double)1; //needs to be Double
+		while (y > 0) {
+			result = result * x;
+			y--;
+		}
+		return result;
+	}
+	else {
+		Double result = (Double)1; //needs to be Double
+		while (y < 0) {
+			result = result/x;
+			y++;
 		}
 		return result;
 	}
 }
+Double abs(Double x) {
+	return (x>(Double)0) ? x : (-x); // 0 needs to be real Double
+}
 Double exponent(Double x) {
-	Double result = 1; // need to be Double
-	Double term = 1; // need to be Double
-	int i = 1;// need to be Double
-	while (term > pow((Double)10, -PREC)) {// need to be Double
-		term = (term * x) / (Double)i;// need to be Double
+	Double result = 1; // 1 needs to be real Double
+	Double term = 1; // 1 needs to be real Double
+	int i = 1;
+	while (abs(term) > pow((Double)10, (int)-30)) {// 10 needs to be real Double
+		term = (term * x) / (Double)i;// i needs to be real Double
 		result = result + term;
 		i++;
 	}
 	return result;
 }
-Double pow(Double x, Double y)
-{
-	// to be completed.
-	return x;
+
+Double lnop(Double x) {
+	if (x > (Double)1 || x <= (Double)-1) throw "Not in convergent radius"; //1 & -1 needs to be real Double
+	Double result = x;
+	Double term = x;
+	int i = 2;
+	while (i<100) {// 10 needs to be real Double, abs(term) > pow((Double)10, (int)-30) doesn't work
+		term = term*(-x)*((Double)(i - 1) / (Double)(i)); // i needs to be real Double
+		result = result + term;
+		i++;
+	}
+	return result;
 }
-
-
+Double ln(Double x) {
+	if (x < (Double)0) throw "LN_NUM_EXP"; // 0 needs to be real Double
+	Double u = (x - (Double)1) / (x + (Double)1); // 1 needs to be real Double
+	cout << u << endl;
+	return (lnop(u) - lnop(-u));
+}
+Double pow(Double x, Double y) {
+	return exponent(ln(x)*y);
+}
 Double ArcTan(const Double& x)
 {
 	Double ans = x;

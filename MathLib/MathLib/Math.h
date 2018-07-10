@@ -156,11 +156,13 @@ bool operator==(const Double& a, const Double& b);
 bool operator<(const Double& a, const Double& b);
 bool operator>(const Double& a, const Double& b);
 
-
-Double pow(Double x, Double y);
+Double abs(Double x);
+Double pow(Double x, int y);
 Double ArcTan(const Double& x);
 Double exponent(Double x);
-
+Double lnop(Double x);
+Double ln(Double x);
+Double pow(Double x, Double y);
 
 class fraction :protected Math
 {
