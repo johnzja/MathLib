@@ -3,6 +3,8 @@
 
 extern const char*   _Divide_By_Zero;
 extern int str_cmp(char* a_start, char* b_start, int a_length, int b_length);
+Double Double_zero = Double(Int(0));
+Double Double_one = Double(Int(1));
 
 int str_divide_givenlength(char* str1, char* str2, int length1, int length2, char*& quotient_ptr,int quotient_length_required)
 //str1.length should be quotient_length_required + divisor_length+1. Ensure that the dividient is larger than the divisor!!!
@@ -184,8 +186,8 @@ inline int min(int a, int b)
 {
 	return (a < b) ? a : b;
 }
-int Double::getExpPrecision(void) {
-	return exp;
+int Double::getPrecision(void) {
+	return precision;
 }
 int abs_compare(const Double& a,const Double& b)
 {
@@ -572,13 +574,13 @@ bool operator>(const Double& a, const Double& b)
 
 //Some Mathmatical Functions.
 Double pow(Double x, int y) {
-	if (x == (Double)0 && y <= 0) throw MATH_ERREXCEPT; //needs to be Double
-	else if (y == 0) return 1; 
-	else if (y == 1) return x; 
-	else if (x == (Double)0) return 0; //needs to be Double
-	else if (x == (Double)1) return 1; //needs to be Double
-	else if (y > 0) { 
-		Double result = (Double)1; //needs to be Double
+	if (x == Double_zero && y <= 0) throw MATH_ERREXCEPT;
+	else if (y == 0) return 1;
+	else if (y == 1) return x;
+	else if (x == Double_zero) return Double_zero; 
+	else if (x == Double_one) return Double_one; 
+	else if (y > 0) {
+		Double result = Double_one; 
 		while (y > 0) {
 			result = result * x;
 			y--;
@@ -586,7 +588,7 @@ Double pow(Double x, int y) {
 		return result;
 	}
 	else {
-		Double result = (Double)1; //needs to be Double
+		Double result = Double_one;
 		while (y < 0) {
 			result = result/x;
 			y++;
@@ -594,15 +596,16 @@ Double pow(Double x, int y) {
 		return result;
 	}
 }
+
 Double abs(Double x) {
-	return (x>(Double)0) ? x : (-x); // 0 needs to be real Double
+	return (x>Double_zero) ? x : (-x);
 }
 Double exponent(Double x) {
-	Double result = 1; // 1 needs to be real Double
-	Double term = 1; // 1 needs to be real Double
+	Double result = Double_one; 
+	Double term = Double_one; 
 	int i = 1;
-	while (abs(term) > pow((Double)10, (int)-30)) {// 10 needs to be real Double
-		term = (term * x) / (Double)i;// i needs to be real Double
+	while (abs(term) > pow(Double(Int(10)), (int)-30)) {
+		term = (term * x) / (Double(Int(i)));
 		result = result + term;
 		i++;
 	}
@@ -610,26 +613,28 @@ Double exponent(Double x) {
 }
 
 Double lnop(Double x) {
-	if (x > (Double)1 || x <= (Double)-1) throw "Not in convergent radius"; //1 & -1 needs to be real Double
+	if (x > Double_one || x <= -Double_one) throw "Not in convergent radius"; 
 	Double result = x;
 	Double term = x;
 	int i = 2;
-	while (i<100) {// 10 needs to be real Double, abs(term) > pow((Double)10, (int)-30) doesn't work
-		term = term*(-x)*((Double)(i - 1) / (Double)(i)); // i needs to be real Double
+	while (abs(term) > pow(Double(Int(10)), (int)-20)) {
+		term = term*(-x)*(Double(Int(i-1))/ Double(Int(i))); 
 		result = result + term;
 		i++;
 	}
 	return result;
 }
+
 Double ln(Double x) {
 	if (x < (Double)0) throw "LN_NUM_EXP"; // 0 needs to be real Double
 	Double u = (x - (Double)1) / (x + (Double)1); // 1 needs to be real Double
-	cout << u << endl;
 	return (lnop(u) - lnop(-u));
 }
+
 Double pow(Double x, Double y) {
 	return exponent(ln(x)*y);
 }
+
 Double ArcTan(const Double& x)
 {
 	Double ans = x;
