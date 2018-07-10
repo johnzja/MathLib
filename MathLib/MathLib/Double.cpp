@@ -3,10 +3,11 @@
 
 extern const Int Int_one = Int(1);
 
-const Double Db_zero = Double(Int(0), Int_one);
-const Double Db_one = Double(Int_one, Int_one);
+extern const Double Db_zero = Double(Int(0), Int_one);
+extern const Double Db_one = Double(Int_one, Int_one);
 
 extern const char*   _Divide_By_Zero;
+extern const char* _Invalid_Input;
 extern int str_cmp(char* a_start, char* b_start, int a_length, int b_length);
 
 int str_divide_givenlength(char* str1, char* str2, int length1, int length2, char*& quotient_ptr,int quotient_length_required)
@@ -58,6 +59,15 @@ int str_divide_givenlength(char* str1, char* str2, int length1, int length2, cha
 	} while (first_non_zero || --quotient_length_required);//loop quotient_length_required times.
 
 	return quotient_exp;
+}
+
+inline int max(int a, int b)
+{
+	return (a > b) ? a : b;
+}
+inline int min(int a, int b)
+{
+	return (a < b) ? a : b;
 }
 
 //Constructor: assure that precision==val.rLength;
@@ -157,9 +167,79 @@ ostream& operator<<(ostream& ost, const Double& db)
 
 istream& operator>>(istream& ist, Double& db)
 {
+	string num;
+	ist >> num;
+	//Check validity.
 
+	//Parse the string.
+	string ans_abs_value;
+	size_t L = num.length();
+	int Int_exp = 0;
 
+	//Check validity.
 
+	for (size_t i = 0;i < L;i++)
+	{
+		char c = num[i];
+		if (!(c == '.' || c == '-' || ((c <= '9') && (c >= '0'))))//Error.
+		{
+			throw Exceptions(_Invalid_Input);
+		}
+	}
+
+	bool negativeFlag = false;
+	bool decimalFlag = false;
+
+	//look at the negative.
+	size_t i, j;
+	if (num[0] == '-')
+	{
+		negativeFlag = true;
+		i = 1;
+	}
+	else
+	{
+		i = 0;
+	}
+
+	//Extract the number part.
+	bool startExtFlag = false;
+	for (j = i;j < L;j++)
+	{
+		if (startExtFlag || ((num[j] <= '9') && (num[j] >= '1')))
+		{
+			ans_abs_value += num[j];
+			startExtFlag = true;
+		}
+		if (num[j] == '.' && !decimalFlag)
+		{
+			decimalFlag = true;
+			if (!ans_abs_value.empty())ans_abs_value.pop_back();
+			Int_exp = -(int)((L - 1) - j);
+		}
+		else if (num[j] == '.' && decimalFlag) throw Exceptions(_Invalid_Input);
+
+	}
+
+	//Check the string obtained.
+	L = ans_abs_value.length();
+
+	for (j = 0;j < L;j++)
+		if (!(ans_abs_value[j] <= '9' && ans_abs_value[j] >= '0')) throw Exceptions(_Invalid_Input);
+	//Convert the string into an Int, then a double.
+	int prec = max(PREC, L);
+	Int val = Int(0, prec);//Do not forget to realLength().
+	val.data_tail_ptr = val.data_ptr + prec - 1;
+	for (j = 0;j < L;j++)
+	{
+		*(val.data_ptr + prec - 1 - j) = ans_abs_value[j] - '0';//copy the data.
+	}
+
+	//calculate the exponent.
+	int exp;
+	if (L != 0)exp = Int_exp + L - 1;else exp = 0;
+	if (negativeFlag&& L != 0)val.sign = false;
+	db = Double(val, exp, prec);
 
 	return ist;
 }
@@ -190,17 +270,12 @@ bool Double::isZero()const
 
 
 
-inline int max(int a,int b)
+
+int Double::getExpPrecision(void) 
 {
-	return (a > b) ? a : b;
-}
-inline int min(int a, int b)
-{
-	return (a < b) ? a : b;
-}
-int Double::getExpPrecision(void) {
 	return exp;
 }
+
 int abs_compare(const Double& a,const Double& b)
 {
 	bool isZa = a.isZero();
@@ -586,7 +661,8 @@ bool operator>(const Double& a, const Double& b)
 }
 
 //Some Mathmatical Functions.
-Double pow(Double x, int y) {
+Double pow(Double x, int y) 
+{
 	if (x == (Double)0 && y <= 0) throw MATH_ERREXCEPT; //needs to be Double
 	else if (y == 0) return 1; 
 	else if (y == 1) return x; 
@@ -609,10 +685,14 @@ Double pow(Double x, int y) {
 		return result;
 	}
 }
-Double abs(Double x) {
+
+Double abs(Double x) 
+{
 	return (x>(Double)0) ? x : (-x); // 0 needs to be real Double
 }
-Double exponent(Double x) {
+
+Double exponent(Double x) 
+{
 	Double result = 1; // 1 needs to be real Double
 	Double term = 1; // 1 needs to be real Double
 	int i = 1;
@@ -624,7 +704,8 @@ Double exponent(Double x) {
 	return result;
 }
 
-Double lnop(Double x) {
+Double lnop(Double x) 
+{
 	if (x > (Double)1 || x <= (Double)-1) throw "Not in convergent radius"; //1 & -1 needs to be real Double
 	Double result = x;
 	Double term = x;
@@ -636,15 +717,20 @@ Double lnop(Double x) {
 	}
 	return result;
 }
-Double ln(Double x) {
+
+Double ln(Double x) 
+{
 	if (x < (Double)0) throw "LN_NUM_EXP"; // 0 needs to be real Double
 	Double u = (x - (Double)1) / (x + (Double)1); // 1 needs to be real Double
 	cout << u << endl;
 	return (lnop(u) - lnop(-u));
 }
-Double pow(Double x, Double y) {
+
+Double pow(Double x, Double y) 
+{
 	return exponent(ln(x)*y);
 }
+
 Double ArcTan(const Double& x)
 {
 	Double ans = x;

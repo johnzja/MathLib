@@ -5,9 +5,9 @@ extern const char*   _Divide_By_Zero;
 extern const char* _Negative_Base;
 const double precision = 1e-10;
 
-const fraction frc_zero = fraction();
-const fraction frc_one = fraction(1,1);
-const Int Int_one = Int(1);
+extern const fraction frc_zero = fraction();
+extern const fraction frc_one = fraction(1,1);
+extern const Int Int_one;
 
 //Constructor
 fraction::fraction(int a, int b) :value(0.0,PREC)//unsimplified. precise.  "value" not evaluated.

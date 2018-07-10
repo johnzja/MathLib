@@ -70,8 +70,7 @@ public:
 	friend Double abs_subtract(const Double& a, const Double& b);
 	friend int abs_compare(const Double& a, const Double& b);
 	friend Double operator*(const Double& a, const Double& b);
-
-
+	friend istream& operator>>(istream& ist, Double& db);
 
 
 
@@ -147,6 +146,7 @@ Double operator-(const Double& a, const Double& b);
 Double operator*(const Double& a, const Double& b);
 Double operator/(const Double& a, const Double& b);
 Double operator-(const Double& a);
+istream& operator>>(istream& ist, Double& db);
 
 
 
