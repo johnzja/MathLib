@@ -187,30 +187,47 @@ inline int min(int a, int b)
 
 int abs_compare(const Double& a,const Double& b)
 {
-	if (a.exp > b.exp)
+	bool isZa = a.isZero();
+	bool isZb = b.isZero();
+	if (!isZa && !isZb)
 	{
-		return +1;
+		if (a.exp > b.exp)
+		{
+			return +1;
+		}
+		else if (a.exp < b.exp)
+		{
+			return -1;
+		}
+		else//exp is equal.
+		{
+			int L = min(a.precision, b.precision) - 1;
+			char* ptr_a = a.val.data_tail_ptr;
+			char* ptr_b = b.val.data_tail_ptr;
+			for (;L >= 0;(L--, ptr_a--, ptr_b--))
+			{
+				if (*ptr_a > *ptr_b)
+				{
+					return +1;
+				}
+				else if (*(ptr_a) > *ptr_b)
+				{
+					return -1;
+				}
+			}
+			return 0;
+		}
 	}
-	else if (a.exp < b.exp)
+	else if (isZa && !isZb)
 	{
 		return -1;
 	}
-	else//exp is equal.
+	else if (!isZa && isZb)
 	{
-		int L = min(a.precision, b.precision) - 1;
-		char* ptr_a = a.val.data_tail_ptr;
-		char* ptr_b = b.val.data_tail_ptr;
-		for (;L >= 0;(L--, ptr_a--, ptr_b--))
-		{
-			if (*ptr_a > *ptr_b)
-			{
-				return +1;
-			}
-			else if (*(ptr_a) > *ptr_b)
-			{
-				return -1;
-			}
-		}
+		return +1;
+	}
+	else
+	{
 		return 0;
 	}
 }
@@ -372,7 +389,7 @@ Double operator-(const Double& a, const Double& b)
 		{
 			if (cmp == 0)
 			{
-				return Double((Int)0, 0, max_prec);
+				return Double((Int)0, 0, max_prec);//Zeros can occur. But very rarely.
 			}
 			else if (cmp > 0)
 			{

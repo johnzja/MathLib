@@ -292,7 +292,6 @@ fraction pow(const fraction& frc, const int& n)
 
 }
 
-
 bool isInt(const fraction& frc)
 {
 	if (frc.isApprox == true)return false;
