@@ -184,7 +184,9 @@ inline int min(int a, int b)
 {
 	return (a < b) ? a : b;
 }
-
+int Double::getExpPrecision(void) {
+	return exp;
+}
 int abs_compare(const Double& a,const Double& b)
 {
 	bool isZa = a.isZero();
@@ -470,12 +472,6 @@ Double operator/(const Double& a, const Double& b)
 	ans.exp = ans.exp - a.precision + b.precision + a.exp - b.exp;
 	return ans;
 }
-
-Double pow(Double x, Double y)
-{
-	return x;
-}
-
 //Comparative operators
 
 bool operator==(const Double& a, const Double& b)
@@ -575,6 +571,28 @@ bool operator>(const Double& a, const Double& b)
 }
 
 //Some Mathmatical Functions.
+Double pow(Double x, int y) {
+	Double result = 1;
+	if (x == (Double)0) return 0;
+	else if (x == (Double)1 || y == 0) return 1;
+	else if (y > 0) {
+		for (int i = 0; i < y; i++) {
+			result = x * result;
+		}
+		return result;
+	}
+}
+Double exponent(Double x) {
+	Double result = 1; // need to be Double
+	Double term = 1; // need to be Double
+	int i = 1;// need to be Double
+	while (term > pow((Double)10, -PREC)) {// need to be Double
+		term = (term * x) / (Double)i;// need to be Double
+		result = result + term;
+		i++;
+	}
+	return result;
+}
 Double pow(Double x, Double y)
 {
 	// to be completed.

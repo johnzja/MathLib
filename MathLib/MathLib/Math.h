@@ -112,7 +112,7 @@ public:
 	Double(const Int& a, const Int& b,int prec=PREC);
 	Double(const Int& a, int _exp,int prec = PREC);
 	operator double() const;
-	
+	int getExpPrecision(void);
 	friend int abs_compare(const Double& a, const Double& b);
 	bool isZero()const;
 
@@ -132,7 +132,7 @@ public:
 
 
 	friend Double pow(Double x, Double y);
-
+	friend Double pow(Double x, int y);
 	virtual ~Double(){}
 
 
@@ -159,7 +159,7 @@ bool operator>(const Double& a, const Double& b);
 
 Double pow(Double x, Double y);
 Double ArcTan(const Double& x);
-
+Double exponent(Double x);
 
 
 class fraction :protected Math
