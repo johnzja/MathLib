@@ -146,7 +146,7 @@ ostream& operator<<(ostream& ost, const Double& db)
 			cout << (char(*ptr + '0'));
 		}
 	}
-	
+
 	return ost;
 }
 
@@ -227,11 +227,11 @@ Double abs_add(const Double& a, const Double& b)
 	int sum_length = max_pow_10 - min_pow_10 + 2;
 	char* sum_ptr = (char*)calloc(sum_length, 1);
 
-	
+
 	for (int i = 0;i < sum_length;i++)//i==0: the min pow of 10 to the highest pow+1.
 	{
 		sum_ptr[i] = a.val.GetDigit(min_pow_10 + i - a.exp + a_val_L - 1) + b.val.GetDigit(min_pow_10 + i - b.exp + b_val_L - 1);
-		
+
 	}
 
 	for (int i = 0;i < sum_length;i++)//Strange problems here!
@@ -288,7 +288,7 @@ Double abs_subtract(const Double& a, const Double& b)
 			diff_ptr[i] += 10;
 		}
 	}
-	
+
 	//Find the highest non-zero element and determine the exp of the new number.
 	char* num_tail_ptr = diff_ptr + diff_length - 1;
 	while (*num_tail_ptr == 0)
@@ -456,7 +456,6 @@ Double operator/(const Double& a, const Double& b)
 
 Double pow(Double x, Double y)
 {
-	// to be completed.
 	return x;
 }
 
