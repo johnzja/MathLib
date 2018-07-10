@@ -111,6 +111,7 @@ public:
 	Double(const Int& a, const Int& b,int prec=PREC);
 	Double(const Int& a, int _exp,int prec = PREC);
 	operator double() const;
+	int getPrecision(void);
 	int getExpPrecision(void);
 	friend int abs_compare(const Double& a, const Double& b);
 	bool isZero()const;
