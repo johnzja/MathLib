@@ -454,12 +454,7 @@ Double operator/(const Double& a, const Double& b)
 	return ans;
 }
 
-Double pow(Double x, Double y)
-{
-	// to be completed.
-	return x;
-}
-
+//Comparative operators
 bool operator==(const Double& a, const Double& b)
 {
 	if (a.exp != b.exp || a.precision != b.precision)
@@ -554,4 +549,34 @@ bool operator>(const Double& a, const Double& b)
 			}
 		}
 	}
+}
+
+//Some Mathmatical Functions.
+Double pow(Double x, Double y)
+{
+	// to be completed.
+	return x;
+}
+
+
+Double ArcTan(const Double& x)
+{
+	Double ans = x;
+	Double mul = x * x;
+	Double base = x * mul;
+
+	for (int i = 1;i <= 200;i++)//100 terms of series.
+	{
+		if (i % 2)
+		{
+			ans = ans - Double((Int)1, (Int)(2 * i + 1)) * base;
+		}
+		else
+		{
+			ans = ans + Double((Int)1, (Int)(2 * i + 1)) * base;
+		}
+		base = base * mul;
+	}
+
+	return ans;
 }

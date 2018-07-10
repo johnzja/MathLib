@@ -131,7 +131,6 @@ public:
 	friend bool operator>(const Double& a, const Double& b);
 
 
-
 	friend Double pow(Double x, Double y);
 
 	virtual ~Double(){}
@@ -151,14 +150,15 @@ Double operator-(const Double& a);
 
 
 
-Double pow(Double x, Double y);
 
-//Comparing operators
+//Comparative operators
 bool operator==(const Double& a, const Double& b);
 bool operator<(const Double& a, const Double& b);
 bool operator>(const Double& a, const Double& b);
 
 
+Double pow(Double x, Double y);
+Double ArcTan(const Double& x);
 
 
 
@@ -170,14 +170,13 @@ public:
 	fraction(Int a);
 
 	fraction(double value);
-	fraction(Double value);
+	fraction(const Double& value);
 
 	fraction() :numerator(0, 1), denominator(1, 1), value(0.0, PREC)//Default constructor:zero fraction
 	{
 		isSimplified = true;
 		isApprox = false;
 	}
-
 
 	virtual ~fraction() {}
 
@@ -186,6 +185,15 @@ public:
 	void SetValue(double val);
 	bool& GetApprox() { return isApprox; }
 	bool GetApprox()const { return isApprox; }
+
+	void AbortPreciseCalculation();
+
+
+	fraction& operator+=(const fraction& b);
+	fraction& operator-=(const fraction& b);
+	fraction& operator*=(const fraction& b);
+	fraction& operator/=(const fraction& b);
+
 
 	friend fraction simplify(const fraction& a);
 	friend bool operator==(const fraction& a, const fraction & b);
@@ -197,6 +205,8 @@ public:
 	friend fraction operator*(const fraction& a, const fraction& b);
 	friend fraction reciprocal(const fraction& a);
 	friend void displayFrac(const fraction& a, bool newline);
+	friend bool isInt(const fraction& frc);
+
 
 
 private:
@@ -209,10 +219,15 @@ private:
 };
 
 ostream& operator<<(ostream& ost, const fraction& frac);
+
+fraction operator+(const fraction& a, const fraction& b);
+fraction operator-(const fraction& a);
+fraction operator-(const fraction& a, const fraction& b);
 fraction operator*(const fraction& a, const fraction& b);
 fraction operator/(const fraction& a, const fraction& b);
-fraction& operator*=(fraction& a, const fraction& b);
 fraction pow(const fraction& frc, const int& n);
+
+bool isInt(const fraction& frc);
 
 
 class Real : protected Math
