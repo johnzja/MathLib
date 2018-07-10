@@ -1,13 +1,14 @@
 #include "stdafx.h"
-#include "math.h"
+#include "Math.h"
 
 extern const char*   _Divide_By_Zero;
 extern const char* _Negative_Base;
 const double precision = 1e-10;
 
-fraction frc_zero = fraction();
-fraction frc_one = fraction(1,1);
-Int Int_one = Int(1);
+const fraction frc_zero = fraction();
+const fraction frc_one = fraction(1,1);
+const Int Int_one = Int(1);
+
 //Constructor
 fraction::fraction(int a, int b) :value(0.0,PREC)//unsimplified. precise.  "value" not evaluated.
 {

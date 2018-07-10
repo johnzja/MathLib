@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "Math.h"
 
+extern const Int Int_one = Int(1);
+
+const Double Db_zero = Double(Int(0), Int_one);
+const Double Db_one = Double(Int_one, Int_one);
+
 extern const char*   _Divide_By_Zero;
 extern int str_cmp(char* a_start, char* b_start, int a_length, int b_length);
 
@@ -77,7 +82,7 @@ Double::Double(double x,int prec):precision(prec),val(0,prec)
 	val.real_length();
 }
 
-Double::Double(const Int& a, int _exp,int prec):val(a),precision(prec),exp(_exp)
+Double::Double(const Int& a, int _exp,int prec):val(a),precision(prec),exp(_exp)//Never use this constructor!
 {
 
 }
@@ -148,6 +153,15 @@ ostream& operator<<(ostream& ost, const Double& db)
 	}
 
 	return ost;
+}
+
+istream& operator>>(istream& ist, Double& db)
+{
+
+
+
+
+	return ist;
 }
 
 Double::operator double() const
@@ -471,10 +485,6 @@ Double operator/(const Double& a, const Double& b)
 	return ans;
 }
 
-Double pow(Double x, Double y)
-{
-	return x;
-}
 
 //Comparative operators
 
