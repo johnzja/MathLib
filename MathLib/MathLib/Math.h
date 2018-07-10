@@ -251,3 +251,71 @@ class List : protected Math
 {
 
 };
+
+
+struct SelectArray//In resources.
+{
+
+	SelectArray(int ArrLength) :ArrayLength(ArrLength)//ArrLength>=1
+	{
+		SArrayPtr = new bool[ArrayLength];
+		//Initialize as false?
+		return;
+	}
+
+	void initialize(bool initAsOne = true)
+	{
+		OverFlowFlag = false;
+		SArrayPtr[0] = initAsOne;//InitialValue=0001;
+		for (int i = 1;i < ArrayLength;i++)
+		{
+			SArrayPtr[i] = false;
+		}
+		return;
+	}
+
+	~SelectArray()
+	{
+		delete[] SArrayPtr;
+	}
+
+
+
+	void operator++(int)
+	{
+		for (int i = 0;i < ArrayLength;i++)
+		{
+			if (!SArrayPtr[i])
+			{
+				SArrayPtr[i] = true;
+				return;
+			}
+			else
+			{
+				SArrayPtr[i] = false;
+			}
+		}
+		OverFlowFlag = true;
+		return;
+	}
+
+	int truecnt(void)const
+	{
+		int cnt = 0;
+		for (int i = 0;i < ArrayLength;i++)
+		{
+			if (SArrayPtr[i])cnt++;
+		}
+		return cnt;
+	}
+
+	int falsecnt(void)const
+	{
+		return ArrayLength - truecnt();
+	}
+
+
+	bool OverFlowFlag;
+	bool* SArrayPtr;
+	int ArrayLength;
+};
