@@ -187,30 +187,47 @@ inline int min(int a, int b)
 
 int abs_compare(const Double& a,const Double& b)
 {
-	if (a.exp > b.exp)
+	bool isZa = a.isZero();
+	bool isZb = b.isZero();
+	if (!isZa && !isZb)
 	{
-		return +1;
+		if (a.exp > b.exp)
+		{
+			return +1;
+		}
+		else if (a.exp < b.exp)
+		{
+			return -1;
+		}
+		else//exp is equal.
+		{
+			int L = min(a.precision, b.precision) - 1;
+			char* ptr_a = a.val.data_tail_ptr;
+			char* ptr_b = b.val.data_tail_ptr;
+			for (;L >= 0;(L--, ptr_a--, ptr_b--))
+			{
+				if (*ptr_a > *ptr_b)
+				{
+					return +1;
+				}
+				else if (*(ptr_a) > *ptr_b)
+				{
+					return -1;
+				}
+			}
+			return 0;
+		}
 	}
-	else if (a.exp < b.exp)
+	else if (isZa && !isZb)
 	{
 		return -1;
 	}
-	else//exp is equal.
+	else if (!isZa && isZb)
 	{
-		int L = min(a.precision, b.precision) - 1;
-		char* ptr_a = a.val.data_tail_ptr;
-		char* ptr_b = b.val.data_tail_ptr;
-		for (;L >= 0;(L--, ptr_a--, ptr_b--))
-		{
-			if (*ptr_a > *ptr_b)
-			{
-				return +1;
-			}
-			else if (*(ptr_a) > *ptr_b)
-			{
-				return -1;
-			}
-		}
+		return +1;
+	}
+	else
+	{
 		return 0;
 	}
 }
@@ -372,7 +389,7 @@ Double operator-(const Double& a, const Double& b)
 		{
 			if (cmp == 0)
 			{
-				return Double((Int)0, 0, max_prec);
+				return Double((Int)0, 0, max_prec);//Zeros can occur. But very rarely.
 			}
 			else if (cmp > 0)
 			{
@@ -459,6 +476,8 @@ Double pow(Double x, Double y)
 	return x;
 }
 
+//Comparative operators
+
 bool operator==(const Double& a, const Double& b)
 {
 	if (a.exp != b.exp || a.precision != b.precision)
@@ -476,4 +495,111 @@ bool operator==(const Double& a, const Double& b)
 			return false;
 		}
 	}
+}
+
+bool operator<(const Double& a, const Double& b)
+{
+	int abs_cmp_result;
+	if (a.val.sign && b.val.sign)
+	{
+		switch (abs_cmp_result = abs_compare(a, b))
+		{
+		case +1:
+			return false;
+		case -1:
+			return true;
+		default:
+			return false;
+		}
+	}
+	else if (a.val.sign && !b.val.sign)//a>=0,b<0
+	{
+		return false;
+	}
+	else if (!a.val.sign && b.val.sign)//a<0, b>=0
+	{
+		return true;
+	}
+	else//a<0,b<0
+	{
+		switch (abs_cmp_result = abs_compare(a, b))
+		{
+		case +1:
+			return true;
+		case -1:
+			return false;
+		default:
+			return false;
+		}
+	}
+
+}
+
+bool operator>(const Double& a, const Double& b)
+{
+	{
+		int abs_cmp_result;
+		if (a.val.sign && b.val.sign)//a>=0,b>=0
+		{
+			switch (abs_cmp_result = abs_compare(a, b))
+			{
+			case +1:
+				return true;
+			case -1:
+				return false;
+			default:
+				return false;
+			}
+		}
+		else if (a.val.sign && !b.val.sign)//a>=0,b<0
+		{
+			return true;
+		}
+		else if (!a.val.sign && b.val.sign)//a<0, b>=0
+		{
+			return false;
+		}
+		else//a<0,b<0
+		{
+			switch (abs_cmp_result = abs_compare(a, b))
+			{
+			case +1:
+				return false;
+			case -1:
+				return true;
+			default:
+				return false;
+			}
+		}
+	}
+}
+
+//Some Mathmatical Functions.
+Double pow(Double x, Double y)
+{
+	// to be completed.
+	return x;
+}
+
+
+Double ArcTan(const Double& x)
+{
+	Double ans = x;
+	Double mul = x * x;
+	Double base = x * mul;
+
+	for (int i = 1;i <= 200;i++)//100 terms of series.
+	{
+		if (i % 2)
+		{
+			ans = ans - Double((Int)1, (Int)(2 * i + 1)) * base;
+		}
+		else
+		{
+			ans = ans + Double((Int)1, (Int)(2 * i + 1)) * base;
+		}
+		base = base * mul;
+	}
+
+	return ans;
 }

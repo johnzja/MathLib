@@ -34,7 +34,7 @@ fraction::fraction(double value) :value(value,14)//From double: precision<=14
 	isSimplified = true;
 }
 
-fraction::fraction(Double value):value(value)
+fraction::fraction(const Double& value):value(value)
 {
 	isApprox = true;
 	isSimplified = true;
@@ -111,6 +111,16 @@ void fraction::SetValue(double val)
 	isSimplified = true;
 }
 
+void fraction::AbortPreciseCalculation()
+{
+	if (!isApprox)//precise
+	{
+		*this = simplify(*this);//Simplification.
+		isApprox = true;
+		value = Double(numerator, denominator);
+	}
+}
+
 bool operator==(const fraction& a, const fraction & b)
 {
 	fraction c = simplify(a);
@@ -125,7 +135,7 @@ bool operator==(const fraction& a, const fraction & b)
 fraction operator+(const fraction& a, const fraction& b)
 {
 
-	if (a.isApprox == false && b.isApprox == false)
+	if (!a.isApprox && !b.isApprox)
 	{
 		if (a.denominator.isZero() || b.denominator.isZero())throw Exceptions(_Divide_By_Zero);
 		fraction ans = fraction(a.numerator*b.denominator + a.denominator*b.numerator, a.denominator*b.denominator);
@@ -136,7 +146,6 @@ fraction operator+(const fraction& a, const fraction& b)
 		return fraction(a.value + b.value);
 	}
 }
-
 fraction operator-(const fraction& a)
 {
 	if (a.isApprox == false)
@@ -149,7 +158,6 @@ fraction operator-(const fraction& a)
 		return fraction(-a.value);
 	}
 }
-
 fraction operator-(const fraction& a, const fraction& b)
 {
 	if (a.isApprox == false && b.isApprox == false)
@@ -163,7 +171,6 @@ fraction operator-(const fraction& a, const fraction& b)
 		return fraction(a.value - b.value);
 	}
 }
-
 fraction operator*(const fraction& a, const fraction& b)
 {
 	if (a.isApprox == false && b.isApprox == false)
@@ -177,11 +184,6 @@ fraction operator*(const fraction& a, const fraction& b)
 	}
 }
 
-fraction& operator*=(fraction& a,const fraction& b)
-{
-	a = a * b;
-	return a;
-}
 
 fraction reciprocal(const fraction& a)
 {
@@ -202,6 +204,27 @@ fraction reciprocal(const fraction& a)
 fraction operator/(const fraction& a, const fraction& b)
 {
 	return a * reciprocal(b);
+}
+
+fraction& fraction::operator+=(const fraction& b)
+{
+	*this = (*this) + b;
+	return *this;
+}
+fraction& fraction::operator-=(const fraction& b)
+{
+	*this = (*this) - b;
+	return *this;
+}
+fraction& fraction::operator/=(const fraction& b)
+{
+	*this = (*this) / b;
+	return *this;
+}
+fraction& fraction::operator*=(const fraction& b)
+{
+	*this = (*this) * b;
+	return *this;
 }
 
 void displayFrac(const fraction& a, bool newline)
@@ -247,7 +270,7 @@ fraction pow(const fraction& frc, const int& n)
 	{
 		return frc_one;
 	}
-	else if (n > 0)
+	else if (n > 0)//Fast power Algorithm
 	{
 		fraction base = frc;
 		fraction ans = frc_one;
@@ -269,16 +292,14 @@ fraction pow(const fraction& frc, const int& n)
 
 }
 
-/*
 bool isInt(const fraction& frc)
 {
 	if (frc.isApprox == true)return false;
 	fraction temp = simplify(frc);
-	if (temp.denominator == 1)return true;
+	if (temp.denominator == Int_one)return true;
 	else return false;
-
 }
-*/
+
 
 ostream& operator<<(ostream& ost, const fraction& frac)
 {

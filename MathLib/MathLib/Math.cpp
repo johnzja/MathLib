@@ -575,7 +575,7 @@ Int::operator int()const//<=10^9
 	int l = 1;
 	for (int i = 0;i < 9;i++)
 	{
-		ans += l * GetDigit(i);//Avoid length<=9.
+		ans += l * GetDigit(i);//Avoid length>=9.
 		l *= 10;
 	}
 	if (sign)
