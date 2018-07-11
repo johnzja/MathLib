@@ -717,7 +717,7 @@ Double lnop(Double x) {
 	Double result = x;
 	Double term = x;
 	int i = 2;
-	while (abs(term) > pow(Double(Int(10)), (int)-20)) {
+	while (abs(term) > pow(Double(Int(10)), (int)-30)) {
 		term = term*(-x)*(Double(Int(i-1))/ Double(Int(i))); 
 		result = result + term;
 		i++;
