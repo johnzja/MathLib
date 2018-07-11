@@ -3,8 +3,7 @@
 using namespace std;
 
 #define PREC 30
-extern const char* _Matrix_Pointer_Corrupted = "Pointers in Matrix corrupted!";
-extern const char* _Matrix_Size_Error = "Error! The size of a matrix cannot be negative or zero!";
+
 class Double;
 
 class Math
@@ -15,11 +14,11 @@ protected:
 
 };
 
-class Exceptions :protected Math
+class Exceptions :public Math
 {
 public:
 	Exceptions(const char* _err_info);
-	~Exceptions()
+	virtual ~Exceptions()
 	{
 
 	}
@@ -36,10 +35,11 @@ private:
 
 class Function :public Math
 {
-
+public:
+	virtual ~Function(){}
 };
 
-class Int :protected Math
+class Int :public Math
 {
 public:
 	Int(int val = 0, int _length = 10);
@@ -106,7 +106,7 @@ Int abs(const Int& a);
 bool operator==(const Int& a, const Int& b);
 
 
-class Double :protected Math
+class Double :public Math
 {
 public:
 	Double(double x,int prec=PREC);
@@ -138,7 +138,7 @@ public:
 	virtual ~Double(){}
 
 
-	protected://to be modified.
+	private://to be modified.
 	Int val;
 	int exp;
 	int precision;
@@ -167,9 +167,15 @@ Double lnop(Double x);
 Double ln(Double x);
 Double pow(Double x, Double y);
 
-class fraction :protected Math
+class fraction :public Math
 {
 public:
+	fraction() :numerator(0, 1), denominator(1, 1), value(0.0, PREC)//Default constructor:zero fraction
+	{
+		isSimplified = true;
+		isApprox = false;
+	}
+
 	fraction(int a, int b);
 	fraction(Int a, Int b);
 	fraction(Int a);
@@ -177,11 +183,6 @@ public:
 	fraction(double value);
 	fraction(const Double& value);
 
-	fraction() :numerator(0, 1), denominator(1, 1), value(0.0, PREC)//Default constructor:zero fraction
-	{
-		isSimplified = true;
-		isApprox = false;
-	}
 
 	virtual ~fraction() {}
 
@@ -231,29 +232,54 @@ fraction operator-(const fraction& a, const fraction& b);
 fraction operator*(const fraction& a, const fraction& b);
 fraction operator/(const fraction& a, const fraction& b);
 fraction pow(const fraction& frc, const int& n);
+fraction reciprocal(const fraction& a);
+bool operator!=(const fraction& a, const fraction& b);
+
 
 bool isInt(const fraction& frc);
 
 
-class Real : protected Math
+class Real : public Math
 {
 	//one fraction+one Double + one fraction*Sqrt[Int]
 
 
 };
 
-class Complex :protected Math
+class Complex :public Math
 {
 	//2xReal
 };
 
 //Matrix Class started here.
+class Matrix;
+struct SelectArray;
+Matrix reduce(const Matrix& mat, int DeleteCol, int DeleteRow = 0);
+Matrix GaussEliminate(const Matrix& mat, int* rankptr = nullptr, SelectArray** sarray = nullptr);
+Matrix Identity(int n);
+Matrix NullSpace(const Matrix& mat);
+
+
+
 class Matrix : public Math
 {
 	friend Matrix operator+(const Matrix& mat1, const Matrix& mat2);
 	friend Matrix operator-(const Matrix& mat);
 	friend Matrix operator-(const Matrix& mat1, const Matrix& mat2);
 	friend bool operator==(const Matrix& mat1, const Matrix& mat2);
+	friend Matrix reduce(const Matrix& mat, int DeleteCol, int DeleteRow);
+	friend fraction det(const Matrix& mat);
+	friend Matrix inverse(const Matrix& mat);
+	friend Matrix adj(const Matrix& mat);
+	friend Matrix operator*(const Matrix& mat1, const Matrix& mat2);
+	friend Matrix operator*(const fraction& frc, const Matrix& mat);
+	friend Matrix operator%(const Matrix& mat1, const Matrix& mat2);
+	friend Matrix Transpose(const Matrix& mat);
+	friend Matrix GaussEliminate(const Matrix& mat, int* rankptr, SelectArray** sarray);
+	friend Matrix matmerge_row(const Matrix& mat1, const Matrix& mat2);
+	friend Matrix LeftNullSpace(const Matrix& mat);
+	friend fraction Gdet(const Matrix& mat);
+	friend Matrix Ginverse(const Matrix& mat);
 
 
 
@@ -272,54 +298,23 @@ public:
 		ptr = new Math*[row];
 		for (int i = 0;i < row;i++)
 		{
-			ptr[i] = (Math*)new fraction[column + 1]();
+			ptr[i] = (Math*)(new fraction[column]);//Here: should call the constructor!
 		}
 		MatrixCount++;
 	}
 
-	Matrix(const Matrix& mat) :row(mat.row), column(mat.column)//the Copy Constructor includes simplification
-	{
-		if (mat.row <= 0 || mat.column <= 0 || mat.ptr == nullptr)
-		{
-			row = 0;
-			column = 0;
-			ptr = nullptr;
-			MatrixCount++;
-			return;
-		}
-
-		ptr = new Math*[row];
-		fraction* temp_ptr;
-
-		for (int i = 0;i < row;i++)
-		{
-			ptr[i] = (Math*)new fraction[column];
-			for (int j = 0;j < column;j++)
-			{
-				if ((temp_ptr = (dynamic_cast<fraction*>(mat.ptr[i]) + j)) == nullptr)throw Exceptions(_Matrix_Pointer_Corrupted);//Problems here.
-				*(dynamic_cast<fraction*>(ptr[i]) + j) = simplify(*temp_ptr);
-			}
-		}
-		MatrixCount++;
-	}
-
+	Matrix(const Matrix& mat);//the Copy Constructor includes simplification
 	Matrix& operator=(const Matrix& mat);
-
 	fraction& operator()(int i, int j)const;
-
-	bool ValidityCheck()const
-	{
-		if (column <= 0 || row <= 0 || ptr == nullptr)throw Exceptions(_Matrix_Size_Error);
-		return true;
-	}
+	bool ValidityCheck()const;
 
 	void swap(int lineA, int lineB);
-	void add(int lineA, int lineB, fraction rate);
-	void mult(int line, fraction rate);
+	void add(int lineA, int lineB, const fraction& rate);
+	void mult(int line, const fraction& rate);
 
 	void col_swap(int lineA, int lineB);
-	void col_add(int lineA, int lineB, fraction rate);
-	void col_mult(int line, fraction rate);
+	void col_add(int lineA, int lineB, const fraction& rate);
+	void col_mult(int line, const fraction& rate);
 
 	int rank();
 	Matrix EigenEqu();//return a 1xn matrix.
@@ -353,10 +348,6 @@ protected:
 
 //Matrix class ended here.
 
-class List : protected Math
-{
-
-};
 
 
 struct SelectArray//In resources.

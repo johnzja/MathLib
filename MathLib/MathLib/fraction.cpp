@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "Math.h"
 
+
 extern const char*   _Divide_By_Zero;
 extern const char* _Negative_Base;
-const double precision = 1e-10;
 
+
+extern const double precision = 1e-10;
 extern const fraction frc_zero = fraction();
 extern const fraction frc_one = fraction(1,1);
 extern const Int Int_one;
@@ -83,12 +85,14 @@ fraction simplify(const fraction& a)
 
 double fraction::GetValue(void)const
 {
+
 	if (isApprox)
 	{
 		return double(value);
 	}
 	else
 	{
+	//	cout << numerator << "||"<<denominator << endl;
 		return double(Double(numerator, denominator, PREC));
 	}
 }
@@ -131,6 +135,11 @@ bool operator==(const fraction& a, const fraction & b)
 	{
 		return (a.value == b.value);
 	}
+}
+
+bool operator!=(const fraction& a, const fraction& b)
+{
+	return !(a == b);
 }
 
 fraction operator+(const fraction& a, const fraction& b)

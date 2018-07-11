@@ -3,14 +3,11 @@
 
 extern const Int Int_one = Int(1);
 
-extern const Double Db_zero = Double(Int(0), Int_one);
-extern const Double Db_one = Double(Int_one, Int_one);
-
 extern const char*   _Divide_By_Zero;
 extern const char* _Invalid_Input;
 extern int str_cmp(char* a_start, char* b_start, int a_length, int b_length);
-Double Double_zero = Db_zero;
-Double Double_one = Db_one;
+extern const Double Double_zero = Double((Int)0, Int_one);
+extern const Double Double_one = Double(Int_one, Int_one);
 
 int str_divide_givenlength(char* str1, char* str2, int length1, int length2, char*& quotient_ptr,int quotient_length_required)
 //str1.length should be quotient_length_required + divisor_length+1. Ensure that the dividient is larger than the divisor!!!
@@ -248,21 +245,25 @@ istream& operator>>(istream& ist, Double& db)
 
 Double::operator double() const
 {
-	int exp_s = exp;
-	double ans = 0.0;//initial value=0.0
-	for (int i = precision - 1;i >= 0;i--)
+	if (!val.isZero())
 	{
-		ans += val.data_ptr[i] * pow(10.0, exp_s);
-		exp_s--;
+		int exp_s = exp;
+		double ans = 0.0;//initial value=0.0
+		for (int i = precision - 1;i >= 0;i--)
+		{
+			ans += val.data_ptr[i] * pow(10.0, exp_s);
+			exp_s--;
+		}
+		if (val.sign)
+		{
+			return ans;
+		}
+		else
+		{
+			return -ans;
+		}
 	}
-	if (val.sign)
-	{
-		return ans;
-	}
-	else
-	{
-		return -ans;
-	}
+	else return 0;
 }
 
 bool Double::isZero()const
