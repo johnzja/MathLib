@@ -55,6 +55,11 @@ Int::Int(char* src, int length):length(length)
 	data_tail_ptr = src + length - 1;
 }
 
+int Int::GetLength()const
+{
+	return data_tail_ptr - data_ptr + 1;
+}
+
 int abs_compare(const Int& a, const Int& b)
 {
 	int diff = (a.data_tail_ptr - a.data_ptr) - (b.data_tail_ptr - b.data_ptr);//difference of real length

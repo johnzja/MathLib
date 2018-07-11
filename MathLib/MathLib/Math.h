@@ -10,6 +10,11 @@ class Math
 {
 public:
 	virtual ~Math() {}
+	virtual int GetLength()const
+	{
+		return 0;
+	}
+
 protected:
 
 };
@@ -80,10 +85,8 @@ public:
 	friend ostream& operator<<(ostream& ostr, const Int& a);
 
 	int real_length();
-	unsigned int GetLength()const
-	{
-		return length;
-	}
+	virtual int GetLength()const;
+	
 
 	virtual ~Int();
 
@@ -113,8 +116,8 @@ public:
 	Double(const Int& a, const Int& b,int prec=PREC);
 	Double(const Int& a, int _exp,int prec = PREC);
 	operator double() const;
-	int getPrecision(void);
-	int getExpPrecision(void);
+	int GetPrecision(void);
+	int GetExp(void);
 	friend int abs_compare(const Double& a, const Double& b);
 	bool isZero()const;
 
@@ -135,8 +138,9 @@ public:
 
 	friend Double pow(Double x, Double y);
 	friend Double pow(Double x, int y);
-	virtual ~Double(){}
 
+	virtual ~Double(){}
+	virtual int GetLength()const;
 
 	private://to be modified.
 	Int val;
@@ -189,7 +193,7 @@ public:
 	double GetValue(void)const;
 	Double GetValueD(void)const;
 	void SetValue(double val);
-	bool& GetApprox() { return isApprox; }
+	//bool& GetApprox() { return isApprox; }
 	bool GetApprox()const { return isApprox; }
 
 	void AbortPreciseCalculation();

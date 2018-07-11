@@ -274,13 +274,25 @@ bool Double::isZero()const
 
 
 
-int Double::getExpPrecision(void) 
+int Double::GetExp(void) 
 {
 	return exp;
 }
-int Double::getPrecision(void) 
+
+int Double::GetPrecision(void) 
 {
 	return precision;
+}
+
+int Double::GetLength()const
+{
+	if (val.isZero())return 1;
+	else
+	{
+		if (exp >= 0)
+			return exp + 1;
+		else return 1;
+	}
 }
 
 int abs_compare(const Double& a,const Double& b)
@@ -333,8 +345,8 @@ int abs_compare(const Double& a,const Double& b)
 Double abs_add(const Double& a, const Double& b)
 {
 	int max_prec = (a.precision > b.precision) ? a.precision : b.precision;
-	int a_val_L = a.val.GetLength();
-	int b_val_L = b.val.GetLength();
+	int a_val_L = a.val.length;
+	int b_val_L = b.val.length;
 	//To analyze the range.
 	int max_pow_10 = max(a.exp, b.exp);
 	int min_pow_10 = min(a.exp - (a_val_L - 1), b.exp - (b_val_L - 1));
@@ -381,8 +393,8 @@ Double abs_add(const Double& a, const Double& b)
 Double abs_subtract(const Double& a, const Double& b)
 {
 	int max_prec = (a.precision > b.precision) ? a.precision : b.precision;
-	int a_val_L = a.val.GetLength();
-	int b_val_L = b.val.GetLength();
+	int a_val_L = a.val.length;
+	int b_val_L = b.val.length;
 	//To analyze the range.
 	int max_pow_10 = max(a.exp, b.exp);
 	int min_pow_10 = min(a.exp - (a_val_L - 1), b.exp - (b_val_L - 1));
