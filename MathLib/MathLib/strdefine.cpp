@@ -8,3 +8,5 @@ extern const char* _Math_Error_Gcd = "Error! function gcd cannot compute negativ
 extern const char* _Negative_Base = "Error! The base of a power cannot be negative.";
 extern const char* _Invalid_Input = "Error! Invalid Input.";
 extern const char* _Matrix_Math_Error = "Matrix Math Error.";
+extern const char* _Object_Pointer_Corrupted = "Math* pointer corrupted!";
+extern const char* _Test_Debug_Error = "Test Debug Error!";

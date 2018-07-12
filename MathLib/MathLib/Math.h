@@ -4,6 +4,15 @@ using namespace std;
 
 #define PREC 30
 
+#define EXC 0
+#define FUNC 1
+#define INT 2
+#define DBL 3
+#define FRC 4
+#define REAL 5
+#define CMPLX 6
+#define MAT 7
+
 class Double;
 
 class Math
@@ -14,6 +23,8 @@ public:
 	{
 		return 0;
 	}
+
+	virtual int GetType()const = 0;
 
 protected:
 
@@ -32,16 +43,17 @@ public:
 	{
 		cerr<< errinfo << endl;
 	}
-
+	virtual int GetType() const { return EXC; }
 
 private:
-	char errinfo[60];
+	char errinfo[70];
 };
 
 class Function :public Math
 {
 public:
-	virtual ~Function(){}
+	virtual ~Function() {}
+	virtual int GetType()const { return FUNC; }
 };
 
 class Int :public Math
@@ -86,7 +98,8 @@ public:
 
 	int real_length();
 	virtual int GetLength()const;
-	
+	virtual int GetType() const { return INT; }
+
 
 	virtual ~Int();
 
@@ -141,6 +154,10 @@ public:
 
 	virtual ~Double(){}
 	virtual int GetLength()const;
+	virtual int GetType()const
+	{
+		return DBL;
+	}
 
 	private://to be modified.
 	Int val;
@@ -197,6 +214,10 @@ public:
 	bool GetApprox()const { return isApprox; }
 
 	void AbortPreciseCalculation();
+	virtual int GetType()const
+	{
+		return FRC;
+	}
 
 
 	fraction& operator+=(const fraction& b);
@@ -246,12 +267,23 @@ bool isInt(const fraction& frc);
 class Real : public Math
 {
 	//one fraction+one Double + one fraction*Sqrt[Int]
+public:
+	virtual int GetType()const
+	{
+		return REAL;
+	}
 
 
 };
 
 class Complex :public Math
 {
+public:
+	virtual int GetType()const
+	{
+		return CMPLX;
+	}
+
 	//2xReal
 };
 
@@ -333,8 +365,6 @@ public:
 		MatrixCount--;
 	}
 
-	virtual int GetType() const { return 1; }
-
 	Matrix GetRow(int Row);
 	Matrix GetColumn(int Column);
 	void ReplaceColumn(const Matrix& B, int pos_col);
@@ -342,6 +372,11 @@ public:
 	int GetRowCnt()const { return row; }
 	int GetColCnt()const { return column; }
 	static int GetMatrixCnt() { return MatrixCount; }
+
+	virtual int GetType()const
+	{
+		return MAT;
+	}
 
 protected:
 	int row;
