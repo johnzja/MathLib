@@ -2,6 +2,7 @@
 #include "ExpressionAnalyzer.h"
 
 extern const char* _Object_Pointer_Corrupted;
+extern const char* _Test_Debug_Error;
 
 Math* _calculate(Math* a, Math* b, char optr)// a & b should be deleted?!
 {
@@ -32,11 +33,11 @@ Math* _calculate(Math* a, Math* b, char optr)// a & b should be deleted?!
 		break;
 
 	default:
-		throw 
+		throw Exceptions(_Test_Debug_Error);
 	}
 
 
 
 
-
+	return nullptr;
 }

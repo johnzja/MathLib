@@ -29,4 +29,4 @@
 
 
 
-Math* evaluate(Math* a, Math* b, char optr);
+Math* _calculate(Math* a, Math* b, char optr);
