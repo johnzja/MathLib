@@ -18,5 +18,11 @@ enum char_type
 
 
 
-
+//Functions.
 Math* _calculate(Math* a, Math* b, optrs optr);
+Math* Calculate(string expr);
+void ClearOpndStack(stack<Math*>* stkopnd);
+bool Analyze_Change(int AnalyzeResult, bool initialize);
+
+
+

@@ -12,6 +12,10 @@ enum data_type
 // & operators are defined as enum.
 
 class Double;
+class Math;
+class fraction;
+class Matrix;
+class Int;
 
 class Math
 {
@@ -21,6 +25,7 @@ public:
 	{
 		return 0;
 	}
+	virtual void print()const = 0;
 
 	virtual data_type GetType()const = 0;
 
@@ -37,9 +42,14 @@ public:
 
 	}
 
-	void display()
+	void display()const
 	{
 		cerr<< errinfo << endl;
+	}
+
+	virtual void print() const
+	{
+		display();
 	}
 	virtual data_type GetType() const { return EXC; }
 
@@ -58,11 +68,17 @@ public:
 	virtual Math* apply(Math* x);
 	virtual ~Function() {}
 	virtual data_type GetType()const { return FUNC; }
+	virtual void print()const
+	{
+		cout << "Function name:\t" << func_name << endl;
+		cout << "Function pointer:\t" << funcptr << endl;
+	}
 
 private:
 	void* funcptr;
 	char func_name[20];
 };
+
 
 class Int :public Math
 {
@@ -107,6 +123,10 @@ public:
 	int real_length();
 	virtual int GetLength()const;
 	virtual data_type GetType() const { return INT; }
+	virtual void print()const
+	{
+		cout << *this << endl;
+	}
 
 
 	virtual ~Int();
@@ -132,6 +152,7 @@ Int pow(const Int& a, int b);
 bool operator==(const Int& a, const Int& b);
 
 
+ostream& operator<<(ostream& ost, const Double& db);
 class Double :public Math
 {
 public:
@@ -169,6 +190,11 @@ public:
 		return DBL;
 	}
 
+	virtual void print()const
+	{
+		cout << *this << endl;
+	}
+
 	private://to be modified.
 	Int val;
 	int exp;
@@ -199,6 +225,9 @@ Double lnop(const Double& x);
 Double ln(const Double& x);
 Double pow(const Double& x, const Double& y);
 
+
+ostream& operator<<(ostream& ost, const fraction& frac);
+
 class fraction :public Math
 {
 public:
@@ -228,6 +257,11 @@ public:
 	virtual data_type GetType()const
 	{
 		return FRC;
+	}
+
+	virtual void print()const
+	{
+		cout << *this << endl;
 	}
 
 
@@ -283,6 +317,7 @@ Matrix Identity(int n);
 Matrix NullSpace(const Matrix& mat);
 
 
+ostream& operator<<(ostream& ostr, const Matrix& mat);
 
 class Matrix : public Math
 {
@@ -363,6 +398,11 @@ public:
 	virtual data_type GetType()const
 	{
 		return MAT;
+	}
+
+	virtual void print()const
+	{
+		cout << *this << endl;
 	}
 
 protected:

@@ -130,6 +130,22 @@ fraction& Matrix::operator()(int i, int j)const
 	return *(dynamic_cast<fraction*>(ptr[i]) + j);
 }
 
+ostream& operator<<(ostream& ostr, const Matrix& mat)
+{
+	int row = mat.GetRowCnt();
+	int col = mat.GetColCnt();
+	for (int i = 0;i < row;i++)
+	{
+		for (int j = 0;j < col;j++)
+		{
+			ostr << mat(i, j) << "   ";
+		}
+		ostr << endl;
+	}
+	return ostr;
+}
+
+
 Matrix operator+(const Matrix& mat1, const Matrix& mat2)
 {
 	mat1.ValidityCheck();

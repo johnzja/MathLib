@@ -541,7 +541,7 @@ static fraction Convert_to_Fraction(const string& str)///Fraction? Two ints.
 
 	for (int i = 0;i < L;i++)
 	{
-		if (AnalyzeChar(str[i]) > 1)//not sign nor operand.
+		if (AnalyzeChar(str[i]) != opnd && AnalyzeChar(str[i]) != sign)//not sign nor operand.
 		{
 			throw Exceptions(_Convertion_To_Fraction_Failure);
 		}
@@ -625,7 +625,7 @@ static optrs Convert_to_Operator(const string& str)
 
 	if (L == 0)
 	{
-		throw Exceptions(_Convertion_To_Fraction_Failure);
+		throw Exceptions(_Convertion_To_Op_Failure);
 	}
 	if (L == 1)
 	{
@@ -647,7 +647,7 @@ static optrs Convert_to_Operator(const string& str)
 			return power;
 			break;
 		default:
-			throw Exceptions(_Convertion_To_Fraction_Failure);
+			throw Exceptions(_Convertion_To_Op_Failure);
 		}
 	}
 	else//L>=2:only one circumstance.
@@ -658,7 +658,7 @@ static optrs Convert_to_Operator(const string& str)
 			Analyze_Result = AnalyzeChar(str[i]);
 			if (Analyze_Result != sign)
 			{
-				throw Exceptions(_Convertion_To_Fraction_Failure);
+				throw Exceptions(_Convertion_To_Op_Failure);
 			}
 			else
 			{
