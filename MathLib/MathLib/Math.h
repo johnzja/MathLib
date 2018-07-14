@@ -149,8 +149,8 @@ public:
 	friend bool operator>(const Double& a, const Double& b);
 
 
-	friend Double pow(Double x, Double y);
-	friend Double pow(Double x, int y);
+	friend Double pow(const Double& x, const Double& y);
+	friend Double pow(const Double& x, int y);
 
 	virtual ~Double(){}
 	virtual int GetLength()const;
@@ -180,13 +180,14 @@ bool operator==(const Double& a, const Double& b);
 bool operator<(const Double& a, const Double& b);
 bool operator>(const Double& a, const Double& b);
 
-Double abs(Double x);
-Double pow(Double x, int y);
+//Operations.
+Double abs(const Double& x);
+Double pow(const Double& x, int y);
 Double ArcTan(const Double& x);
-Double exponent(Double x);
-Double lnop(Double x);
-Double ln(Double x);
-Double pow(Double x, Double y);
+Double exponent(const Double& x);
+Double lnop(const Double& x);
+Double ln(const Double& x);
+Double pow(const Double& x, const Double& y);
 
 class fraction :public Math
 {

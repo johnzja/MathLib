@@ -438,7 +438,6 @@ Double abs_subtract(const Double& a, const Double& b)
 
 Double operator+(const Double& a, const Double& b)
 {
-
 	int cmp = abs_compare(a, b);
 	int max_prec = max(a.precision, b.precision);
 
@@ -681,14 +680,15 @@ bool operator>(const Double& a, const Double& b)
 
 //Some Mathmatical Functions.
 
-Double pow(Double x, int y)
+Double pow(const Double& x, int y)
 {
 	if (x == Double_zero && y <= 0) throw MATH_ERREXCEPT;
-	else if (y == 0) return 1;
+	else if (y == 0) return Double_one;
 	else if (y == 1) return x;
 	else if (x == Double_zero) return Double_zero; 
 	else if (x == Double_one) return Double_one; 
-	else if (y > 0) {
+	else if (y > 0) 
+	{
 		Double result = Double_one; 
 
 		while (y > 0) 
@@ -698,9 +698,11 @@ Double pow(Double x, int y)
 		}
 		return result;
 	}
-	else {
+	else 
+	{
 		Double result = Double_one;
-		while (y < 0) {
+		while (y < 0) 
+		{
 			result = result/x;
 			y++;
 		}
@@ -708,15 +710,18 @@ Double pow(Double x, int y)
 	}
 }
 
-
-Double abs(Double x) {
-	return (x>Double_zero) ? x : (-x);
+Double abs(const Double& x) 
+{
+	return (x > Double_zero) ? x : (-x);
 }
-Double exponent(Double x) {
+
+Double exponent(const Double& x) 
+{
 	Double result = Double_one; 
 	Double term = Double_one; 
 	int i = 1;
-	while (abs(term) > pow(Double(Int(10)), (int)-30)) {
+	while (abs(term) > pow(Double(Int(10)), (int)-30)) 
+	{
 		term = (term * x) / (Double(Int(i)));
 		result = result + term;
 		i++;
@@ -724,29 +729,30 @@ Double exponent(Double x) {
 	return result;
 }
 
-
-Double lnop(Double x) {
-	if (x > Double_one || x <= -Double_one) throw "Not in convergent radius"; 
+Double lnop(const Double& x)
+{
+	if (x > Double_one || x <= -Double_one) throw "Not in convergent radius";
 	Double result = x;
 	Double term = x;
 	int i = 2;
-	while (abs(term) > pow(Double(Int(10)), (int)-30)) {
-		term = term*(-x)*(Double(Int(i-1))/ Double(Int(i))); 
+	while (abs(term) > pow(Double(Int(10)), (int)-30))
+	{
+		term = term * (-x)*(Double(Int(i - 1)) / Double(Int(i)));
 		result = result + term;
 		i++;
 	}
 	return result;
 }
 
-
-Double ln(Double x) {
+Double ln(const Double& x)
+{
 	if (x < (Double)0) throw "LN_NUM_EXP"; // 0 needs to be real Double
 	Double u = (x - (Double)1) / (x + (Double)1); // 1 needs to be real Double
 	return (lnop(u) - lnop(-u));
 }
 
-
-Double pow(Double x, Double y) {
+Double pow(const Double& x, const Double& y) 
+{
 	return exponent(ln(x)*y);
 }
 

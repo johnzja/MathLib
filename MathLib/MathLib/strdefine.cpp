@@ -10,3 +10,4 @@ extern const char* _Invalid_Input = "Error! Invalid Input.";
 extern const char* _Matrix_Math_Error = "Matrix Math Error.";
 extern const char* _Object_Pointer_Corrupted = "Math* pointer corrupted!";
 extern const char* _Test_Debug_Error = "Test Debug Error!";
+extern const char* _Operator_Not_Defined = "This operator is not supposed to appear here!";
