@@ -241,7 +241,6 @@ void displayFrac(const fraction& a, bool newline)
 {
 	if (!a.GetApprox())
 	{
-
 		if (a.denominator.isZero())throw Exceptions(_Divide_By_Zero);
 
 		if (a.numerator.isZero())

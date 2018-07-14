@@ -5,18 +5,11 @@ enum optrs
 {
 	add = 0, subt, mult, divide, power, null
 };
-#define OPND 0//operand.
-#define SIGN 1//+-
-#define OPTR 2//*/^
-#define UNIDENT 3
-#define BRAC_LEFT 4
-#define BRAC_RIGHT 5
-#define EQU_SIGN 6
-#define UNIDENT_ERROR "Unidentified Syntax!"
-#define SYNTAX_ERROR "Syntax Error!"
-#define BRAC_ERROR "Brackets don`t match!"
-#define UNIDENT_FUNC_ERROR "Unidentified function Error!"
-#define UNKNOWN_MAT_ERROR "Undefined Matrix!"
+
+enum char_type
+{
+	sign=0, optr, brac_left, brac_right, equ_sign, opnd, func, matrix, unident
+};
 
 //OperatorName
 

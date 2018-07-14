@@ -1,9 +1,12 @@
 #include "stdafx.h"
 #include "Math.h"
 
+extern const Int Int_one;
 
 extern const char*   _Divide_By_Zero;
 extern const char* _Math_Error_Gcd;
+extern const char* _Negative_Base;
+extern const char* _Type_Miss;
 using namespace std;
 
 Int::Int(int val, int _length):length(_length)
@@ -642,7 +645,33 @@ Int abs(const Int& a)
 	return ans;
 }
 
+Int pow(const Int& a, int b)
+{
+	if (b == 0)
+	{
+		return Int_one;
+	}
+	else if (b > 0)//Fast power Algorithm
+	{
+		Int base = a;
+		Int ans = Int_one;
+		int _n = b;
 
+		while (_n)
+		{
+			if (_n & 1)ans = base * ans;
+			base = base * base;
+			_n >>= 1;
+		}
+		return ans;
+	}
+	else
+	{
+		//Throw exceptions.
+		throw Exceptions(_Type_Miss);
+	}
+
+}
 
 
 
@@ -652,4 +681,27 @@ Int abs(const Int& a)
 Exceptions::Exceptions(const char* _error_info)
 {
 	strcpy_s(errinfo, _error_info);
+}
+
+//Function//
+Math* Function::apply(Math* x)
+{
+	Math* result = nullptr;
+	switch (x->GetType())
+	{
+	case DBL:
+		result = new Double(((Double(*)(const Double&))funcptr)(*dynamic_cast<Double*>(x))); break;
+
+	case FRC:
+		result = new fraction(((fraction(*)(const fraction&))funcptr)(*dynamic_cast<fraction*>(x))); break;
+
+	case MAT:
+		result = new Matrix(((Matrix(*)(const Matrix&))funcptr)(*dynamic_cast<Matrix*>(x))); break;
+
+
+
+		break;
+	}
+	return result;
+
 }

@@ -4,14 +4,12 @@ using namespace std;
 
 #define PREC 30
 
-#define EXC 0
-#define FUNC 1
-#define INT 2
-#define DBL 3
-#define FRC 4
-#define REAL 5
-#define CMPLX 6
-#define MAT 7
+//Type info.
+enum data_type
+{
+	EXC,FUNC,INT,DBL,FRC,MAT,NULLS
+};
+// & operators are defined as enum.
 
 class Double;
 
@@ -24,7 +22,7 @@ public:
 		return 0;
 	}
 
-	virtual int GetType()const = 0;
+	virtual data_type GetType()const = 0;
 
 protected:
 
@@ -43,7 +41,7 @@ public:
 	{
 		cerr<< errinfo << endl;
 	}
-	virtual int GetType() const { return EXC; }
+	virtual data_type GetType() const { return EXC; }
 
 private:
 	char errinfo[70];
@@ -52,8 +50,18 @@ private:
 class Function :public Math
 {
 public:
+	Function(char _func_name[], void* _func_ptr) : funcptr(_func_ptr)
+	{
+		strcpy_s(func_name, 20, _func_name);
+	}
+
+	virtual Math* apply(Math* x);
 	virtual ~Function() {}
-	virtual int GetType()const { return FUNC; }
+	virtual data_type GetType()const { return FUNC; }
+
+private:
+	void* funcptr;
+	char func_name[20];
 };
 
 class Int :public Math
@@ -98,7 +106,7 @@ public:
 
 	int real_length();
 	virtual int GetLength()const;
-	virtual int GetType() const { return INT; }
+	virtual data_type GetType() const { return INT; }
 
 
 	virtual ~Int();
@@ -119,6 +127,8 @@ Int operator/(const Int& a, const Int& b);
 
 Int gcd(const Int& a, const Int& b);
 Int abs(const Int& a);
+Int pow(const Int& a, int b);
+
 bool operator==(const Int& a, const Int& b);
 
 
@@ -154,7 +164,7 @@ public:
 
 	virtual ~Double(){}
 	virtual int GetLength()const;
-	virtual int GetType()const
+	virtual data_type GetType()const
 	{
 		return DBL;
 	}
@@ -215,7 +225,7 @@ public:
 	bool GetApprox()const { return isApprox; }
 
 	void AbortPreciseCalculation();
-	virtual int GetType()const
+	virtual data_type GetType()const
 	{
 		return FRC;
 	}
@@ -263,30 +273,6 @@ bool operator!=(const fraction& a, const fraction& b);
 
 
 bool isInt(const fraction& frc);
-
-
-class Real : public Math
-{
-	//one fraction+one Double + one fraction*Sqrt[Int]
-public:
-	virtual int GetType()const
-	{
-		return REAL;
-	}
-
-
-};
-
-class Complex :public Math
-{
-public:
-	virtual int GetType()const
-	{
-		return CMPLX;
-	}
-
-	//2xReal
-};
 
 //Matrix Class started here.
 class Matrix;
@@ -374,7 +360,7 @@ public:
 	int GetColCnt()const { return column; }
 	static int GetMatrixCnt() { return MatrixCount; }
 
-	virtual int GetType()const
+	virtual data_type GetType()const
 	{
 		return MAT;
 	}
@@ -387,8 +373,6 @@ protected:
 };
 
 //Matrix class ended here.
-
-
 
 struct SelectArray//In resources.
 {

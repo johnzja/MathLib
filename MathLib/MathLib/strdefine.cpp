@@ -11,3 +11,13 @@ extern const char* _Matrix_Math_Error = "Matrix Math Error.";
 extern const char* _Object_Pointer_Corrupted = "Math* pointer corrupted!";
 extern const char* _Test_Debug_Error = "Test Debug Error!";
 extern const char* _Operator_Not_Defined = "This operator is not supposed to appear here!";
+extern const char* _Convertion_To_Fraction_Failure = "Convertion to fraction failure!";
+extern const char* _Convertion_To_Op_Failure = "Convertion to operators failure!";
+
+extern const char* _Type_Miss = "Types do not match!";
+extern const char* _Syntax_Error = "Syntax Error!";
+extern const char* _Function_Unidentified = "Error! Unidentified function spotted.";
+extern const char* _Math_Error = "Math error!";
+
+extern const char* _Brac_Error = "Brackets do not match!";
+

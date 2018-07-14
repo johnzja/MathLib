@@ -369,25 +369,30 @@ Double abs_add(const Double& a, const Double& b)
 	}
 	//Find the highest non-zero element and determine the exp of the new number.
 	char* num_tail_ptr = sum_ptr + sum_length - 1;
-
-	while (*num_tail_ptr == 0)
+	while ((*num_tail_ptr == 0) && (num_tail_ptr >= sum_ptr))//If not find, then return zero.
 	{
 		num_tail_ptr--;
 	}
-	int ans_exp = min_pow_10 + (num_tail_ptr - sum_ptr);
-	//Read ans.
 
-	Int ans_val = Int(0, max_prec);//realLength=zero
-	for (int i = max_prec - 1;i >= 0;i--)
+	int ans_exp = 0;
+	if (num_tail_ptr != (sum_ptr - 1))//Normal condition.
 	{
-		*(ans_val.data_ptr + i) = *(num_tail_ptr--);
+		ans_exp = min_pow_10 + (num_tail_ptr - sum_ptr);
+
+		//Read ans.
+		Int ans_val = Int(0, max_prec);//realLength=zero
+		for (int i = max_prec - 1;i >= 0;i--)
+		{
+			*(ans_val.data_ptr + i) = *(num_tail_ptr--);
+		}
+		ans_val.real_length();
+		free(sum_ptr);
+		return Double(ans_val, ans_exp, max_prec);
 	}
-
-	free(sum_ptr);
-	ans_val.real_length();
-	//test
-
-	return Double(ans_val, ans_exp, max_prec);
+	else
+	{
+		return Double_zero;
+	}
 }
 
 Double abs_subtract(const Double& a, const Double& b)
