@@ -22,7 +22,11 @@ enum char_type
 Math* _calculate(Math* a, Math* b, optrs optr);
 Math* Calculate(string expr);
 void ClearOpndStack(stack<Math*>* stkopnd);
+char_type AnalyzeChar(char chr);
+
 bool Analyze_Change(int AnalyzeResult, bool initialize);
+Matrix InputMatrix(int row, int column);
+
 
 
 

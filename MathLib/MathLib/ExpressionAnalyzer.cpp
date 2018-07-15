@@ -10,9 +10,13 @@ extern const char* _Syntax_Error;
 extern const char* _Function_Unidentified;
 extern const char* _Math_Error;
 extern const char* _Brac_Error;
+extern const char* _Matrix_Size_Error;
+extern const char* _Invalid_Input;
 
 extern const Int Int_one;
 extern const fraction frc_zero;
+
+extern int QR(const Matrix& A, Matrix& Q, Matrix& R);
 
 
 #define DECIMAL_LENGTH 5
@@ -58,7 +62,7 @@ Math* _calculate(Math* a, Math* b, optrs optr)// a & b should be deleted?!
 					ans = new Int((*dynamic_cast<Int*>(a)) * (*dynamic_cast<Int*>(b))); break;
 
 				case  divide:
-					ans = new Int((*dynamic_cast<Int*>(a)) / (*dynamic_cast<Int*>(b))); break;
+					ans = new fraction((*dynamic_cast<Int*>(a)), (*dynamic_cast<Int*>(b))); break;
 				}
 			}
 			else if (bType == FRC)//INT optr FRC
@@ -79,10 +83,6 @@ Math* _calculate(Math* a, Math* b, optrs optr)// a & b should be deleted?!
 
 				case divide:
 					ans = new fraction(*(dynamic_cast<fraction*>(a)) / (*dynamic_cast<fraction*>(b))); break;
-
-				default:
-					break;
-
 				}
 			}
 			else if (bType == DBL)//INT optr DBL
@@ -107,10 +107,6 @@ Math* _calculate(Math* a, Math* b, optrs optr)// a & b should be deleted?!
 
 				case power:
 					ans = new Double(pow(*dynamic_cast<Double*>(a), *dynamic_cast<Double*>(b))); break;
-
-				default:
-
-					break;
 				}
 			}
 			else if (bType == MAT)//INT optr MAT
@@ -126,14 +122,8 @@ Math* _calculate(Math* a, Math* b, optrs optr)// a & b should be deleted?!
 
 				case divide:
 					ans = new Matrix(*dynamic_cast<fraction*>(a) * Ginverse(*dynamic_cast<Matrix*>(b))); break;
-
-				default:
-					throw Exceptions(_Operator_Not_Defined);
-					break;
 				}
-
 			}
-
 			break;
 
 		case FRC:
@@ -157,7 +147,6 @@ Math* _calculate(Math* a, Math* b, optrs optr)// a & b should be deleted?!
 					ans = new Double(pow(dynamic_cast<fraction*>(a)->GetValueD(), dynamic_cast<fraction*>(b)->GetValueD())); break;
 
 				default:
-					throw Exceptions(_Operator_Not_Defined);
 					break;
 
 				}
@@ -233,10 +222,6 @@ Math* _calculate(Math* a, Math* b, optrs optr)// a & b should be deleted?!
 
 				case divide:
 					ans = new Matrix(*dynamic_cast<fraction*>(a) * Ginverse(*dynamic_cast<Matrix*>(b))); break;
-
-				default:
-
-					break;
 				}
 			}
 
@@ -343,9 +328,12 @@ Math* _calculate(Math* a, Math* b, optrs optr)// a & b should be deleted?!
 					break;
 				}
 			}
-			else
+			else if(bType==INT)//MAT optr INT
 			{
-				//Error!
+				if (optr == power)
+				{
+					ans = new Matrix(pow(*dynamic_cast<Matrix*>(a), int(*dynamic_cast<Int*>(b))));
+				}
 			}
 
 			break;
@@ -398,6 +386,9 @@ Math* DeepCopy(Math* src)
 
 	case MAT:
 		ans = new Matrix(*(dynamic_cast<Matrix*>(src))); break;
+
+	case DICT:
+		ans = new Dict(*(dynamic_cast<Dict*>(src))); break;
 
 	default:
 
@@ -531,8 +522,9 @@ inline char_type Type(const string& str)
 	return AnalyzeChar(str.back());
 }
 
-static fraction Convert_to_Fraction(const string& str)///Fraction? Two ints.
+static Math* Convert_to_Fraction(const string& str)///Fraction? Two ints. //This can be modified to Math*.
 {
+
 	int L = str.length();
 	bool isNegative = false;
 	bool isDecimal = false;
@@ -562,56 +554,55 @@ static fraction Convert_to_Fraction(const string& str)///Fraction? Two ints.
 		Result_AbsValue += str[i];
 	}
 	//Now start converting.
-	if ((DecimalCount > 1) || (Result_AbsValue.length() == 0) || DecimalCount == L)
+	if ((DecimalCount > 1) || (Result_AbsValue.length() == 0) || DecimalCount == L)//Three abnormal conditions.
 		throw Exceptions(_Convertion_To_Fraction_Failure);
 
 
 	if (!isDecimal)
 	{
-		fraction ans(stoi(Result_AbsValue), 1);
 		if (isNegative)
 		{
-			return -ans;
+			return new Int(-Int(Result_AbsValue));
 		}
 		else
 		{
-			return ans;
+			return new Int(Result_AbsValue);
 		}
 	}
-	else//Decimal=true
+	else//Decimal=true, using fraction.
 	{
-		fraction ans;
+		fraction* ans;
+		int Result_Length = Result_AbsValue.length();
+		int Decimal_Position;
+
+		Decimal_Position = Result_AbsValue.find('.');
+		int Fractional_Part_Length = Result_Length - Decimal_Position - 1;//ok.
+		Result_AbsValue.erase(Decimal_Position, 1);
+
+		Int NUM(Result_AbsValue);
+		Int DENOM = pow(Int(10), Fractional_Part_Length);
+
 		if (Result_AbsValue.length() <= DECIMAL_LENGTH)
 		{
 			//Convert to fraction form.
-			int Result_Length = Result_AbsValue.length();
-			int Decimal_Position;
-
-			Decimal_Position = Result_AbsValue.find('.');
-			int Fractional_Part_Length = Result_Length - Decimal_Position - 1;
-
-			Result_AbsValue.erase(Decimal_Position, 1);
-
-			Int NUM(stoi(Result_AbsValue));
-			Int DENOM = pow(Int(10), Fractional_Part_Length);
 			if (isNegative)
 			{
-				ans = -fraction(NUM, DENOM);
+				ans = new fraction(-NUM, DENOM);
 			}
 			else
 			{
-				ans = fraction(NUM, DENOM);
+				ans = new fraction(NUM, DENOM);
 			}
 		}
 		else
 		{
 			if (isNegative)
 			{
-				ans.SetValue(-stod(Result_AbsValue));
+				ans = new fraction(Double(-NUM, DENOM));
 			}
 			else
 			{
-				ans.SetValue(stod(Result_AbsValue));
+				ans = new fraction(Double(NUM, DENOM));
 			}
 		}
 		return ans;
@@ -795,44 +786,46 @@ void CalculateOnce(stack<Math*>* stkopnd, stack<optrs>* stkoptr)
 
 Math* Func(const string& cmd, Math* data, bool& Error)
 {
+
 	data_type data_type;
 	if (data == nullptr)data_type = NULLS;else data_type = data->GetType();
 	Math* ans_ptr = nullptr;//Answer pointer.
+	fraction* _tmp = nullptr;
 	double val = 0.0;
 	try
 	{
 		switch (data_type)
 		{
+		case INT:
+			_tmp = new fraction(*dynamic_cast<Int*>(data));
+			ans_ptr = Func(cmd, _tmp, Error);
+			//Do not need to delete _tmp;
+			break;
+
 		case FRC:
-			if (cmd == "pi") { ans_ptr = new fraction(PI); }
-			else if (cmd == "e") { ans_ptr = new fraction(EULER_NUM); }//consts
+			val = (dynamic_cast<fraction*>(data))->GetValue();
+			if (cmd == "sin") { ans_ptr = new fraction(sin(val)); }
+			else if (cmd == "cos") { ans_ptr = new fraction(cos(val)); }
+			else if (cmd == "tan") { ans_ptr = new fraction(tan(val)); }
+			else if (cmd == "ln") { ans_ptr = new fraction(ln(dynamic_cast<fraction*>(data)->GetValueD())); }
+			else if (cmd == "lg") { ans_ptr = new fraction(log(val) / log(10.0)); }
+			else if (cmd == "arcsin") { ans_ptr = new fraction(asin(val)); }
+			else if (cmd == "arccos") { ans_ptr = new fraction(acos(val)); }
+			else if (cmd == "arctan") { ans_ptr = new fraction(atan(val)); }
+			else if (cmd == "sqrt") { ans_ptr = new fraction(pow(dynamic_cast<fraction*>(data)->GetValueD(), Double(Int_one, (Int)2))); }
+			//else if (cmd == "cbrt") { ans_ptr= fraction(cbrt(data->value)); }
+			else if (cmd == "reciprocal") { ans_ptr = new fraction(reciprocal(*dynamic_cast<fraction*>(data))); }
+			else if (cmd == "n")//Numerical calculation initialized.
+			{
+				((fraction*)(ans_ptr = new fraction(*dynamic_cast<fraction*>(data))))->AbortPreciseCalculation();
+			}
 			else
 			{
-				val = (dynamic_cast<fraction*>(data))->GetValue();
-				if (cmd == "sin") { ans_ptr = new fraction(sin(val)); }
-				else if (cmd == "cos") { ans_ptr = new fraction(cos(val)); }
-				else if (cmd == "tan") { ans_ptr = new fraction(tan(val)); }
-				else if (cmd == "ln") { ans_ptr = new fraction(log(val)); }
-				else if (cmd == "lg") { ans_ptr = new fraction(log(val) / log(10.0)); }
-				else if (cmd == "arcsin") { ans_ptr = new fraction(asin(val)); }
-				else if (cmd == "arccos") { ans_ptr = new fraction(acos(val)); }
-				else if (cmd == "arctan") { ans_ptr = new fraction(atan(val)); }
-				else if (cmd == "sqrt") { ans_ptr = new fraction(sqrt(val)); }
-				//else if (cmd == "cbrt") { ans_ptr= fraction(cbrt(data->value)); }
-				else if (cmd == "reciprocal") { ans_ptr = new fraction(reciprocal(*dynamic_cast<fraction*>(data))); }
-				else if (cmd == "pi") { ans_ptr = new fraction(PI); }
-				else if (cmd == "e") { ans_ptr = new fraction(EULER_NUM); }//consts
-				else if (cmd == "ans")
-				{
-					return DeepCopy(prev_ans);
-				}
-				else
-				{
-					Error = true;
-					delete data;
-					return nullptr;//Will memory Leak? No!
-				}
+				Error = true;
+				delete data;
+				return nullptr;//Will memory Leak? No!
 			}
+
 			delete data;//delete a null pointer is valid.
 			break;
 
@@ -847,9 +840,27 @@ Math* Func(const string& cmd, Math* data, bool& Error)
 			else if (cmd == "eigenequ")ans_ptr = new Matrix((dynamic_cast<Matrix*>(data))->EigenEqu());
 			else if (cmd == "leftnullspace")ans_ptr = new Matrix(LeftNullSpace(*(dynamic_cast<Matrix*>(data))));
 			else if (cmd == "nullspace")ans_ptr = new Matrix(NullSpace(*(dynamic_cast<Matrix*>(data))));
+			else if (cmd == "n")((Matrix*)(ans_ptr = new Matrix(*dynamic_cast<Matrix*>(data))))->AbortPreciseCalculation();
 
+			else if (cmd == "qr")
+			{
+				Matrix A = *dynamic_cast<Matrix*>(data);//Source
+				if (A.GetColCnt() != A.GetRowCnt())throw Exceptions(_Matrix_Size_Error);
+				int n = A.GetColCnt();
+
+				Matrix* ptr_Q = new Matrix(n, n);
+				Matrix* ptr_R = new Matrix(n, n);
+
+				QR(A, *ptr_Q, *ptr_R);//Perform QR.
+
+				Pair p[2];
+				strcpy(p[0].key, "Q"); p[0].value = ptr_Q;
+				strcpy(p[1].key, "R"); p[1].value = ptr_R;
+				ans_ptr = new Dict(2, p);
+
+
+			}
 			//Customized functions
-
 			else
 			{
 				Error = true;
@@ -858,9 +869,18 @@ Math* Func(const string& cmd, Math* data, bool& Error)
 			}
 			delete data;
 			break;
-			//No default.
-		}
 
+
+		case NULLS:
+
+			if (cmd == "pi") { ans_ptr = new fraction(PI); }
+			else if (cmd == "e") { ans_ptr = new fraction(EULER_NUM); }//consts
+			else if (cmd == "ans")
+			{
+				return DeepCopy(prev_ans);
+			}
+			break;
+		}
 	}
 	catch (...)
 	{
@@ -1003,7 +1023,7 @@ Math* Calculate(string expr)
 					}
 					else if (type_of_tempdata == opnd)//func applied to an operand.
 					{
-						Result_ptr = new fraction(Convert_to_Fraction(Temp_Data));
+						Result_ptr = Convert_to_Fraction(Temp_Data);
 					}
 					else if (type_of_tempdata == matrix)//Maybe a real number.
 					{//The matrix tank MatArr is not modified.
@@ -1032,7 +1052,7 @@ Math* Calculate(string expr)
 			break;
 
 			case opnd:
-				stkopnd.push(new fraction(Convert_to_Fraction(Opnd_Temp)));
+				stkopnd.push(Convert_to_Fraction(Opnd_Temp));
 				break;
 			case matrix:
 				stkopnd.push(MatMap(Opnd_Temp));//Copy constructor called.
@@ -1100,6 +1120,7 @@ Math* Calculate(string expr)
 
 	if (depth == 0)
 	{
+		if (prev_ans != nullptr)delete prev_ans;//Without this line, there`ll be memory leakage.
 		prev_ans = DeepCopy(ans_ptr);
 	}
 
@@ -1112,5 +1133,41 @@ Math* Calculate(string expr)
 }
 
 
+Matrix InputMatrix(int row, int column)
+{
+	if (row <= 0 || column <= 0)throw Exceptions(_Matrix_Size_Error);
+	Matrix A(row, column);
+	int i = 0;
+	int  j = 0;
+	string temp;
+	Math* Tmp_Calculation;
+	fraction* Tmp_ans;
 
+	for (i = 0;i < row;i++)
+	{
+		for (j = 0;j < column;j++)
+		{
+			cin >> temp;
+			Tmp_Calculation = Calculate(temp);
+			switch (Tmp_Calculation->GetType())
+			{
+			case INT:
+				Tmp_ans = new fraction(*dynamic_cast<Int*>(Tmp_Calculation));
+				delete Tmp_Calculation;
+				break;
+
+			case FRC:
+				Tmp_ans = dynamic_cast<fraction*>(Tmp_Calculation);
+				break;
+
+			default:
+				throw Exceptions(_Invalid_Input);
+			}
+
+			A(i, j) = *Tmp_ans;
+			delete Tmp_ans;
+		}
+	}
+	return A;
+}
 

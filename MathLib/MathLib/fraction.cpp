@@ -10,6 +10,7 @@ extern const double precision = 1e-10;
 extern const fraction frc_zero = fraction();
 extern const fraction frc_one = fraction(1,1);
 extern const Int Int_one;
+extern const Double Double_one;
 
 //Constructor
 fraction::fraction(int a, int b) :value(0.0,PREC)//unsimplified. precise.  "value" not evaluated.
@@ -151,14 +152,22 @@ fraction operator+(const fraction& a, const fraction& b)
 		fraction ans = fraction(a.numerator*b.denominator + a.denominator*b.numerator, a.denominator*b.denominator);
 		return simplify(ans);
 	}
-	else
+	else if(a.isApprox && b.isApprox)
 	{
 		return fraction(a.value + b.value);
+	}
+	else if (!a.isApprox && b.isApprox)
+	{
+		return fraction(a.GetValueD() + b.value);
+	}
+	else
+	{
+		return fraction(a.value + b.GetValueD());
 	}
 }
 fraction operator-(const fraction& a)
 {
-	if (a.isApprox == false)
+	if (!a.isApprox)
 	{
 		fraction ans(-a.numerator, a.denominator);
 		return simplify(ans);
@@ -176,9 +185,17 @@ fraction operator-(const fraction& a, const fraction& b)
 		fraction ans = fraction(a.numerator*b.denominator - a.denominator*b.numerator, a.denominator*b.denominator);
 		return simplify(ans);
 	}
-	else
+	else if(a.isApprox && b.isApprox)
 	{
 		return fraction(a.value - b.value);
+	}
+	else if (!a.isApprox && b.isApprox)
+	{
+		return fraction(a.GetValueD() - b.value);
+	}
+	else
+	{
+		return fraction(a.value - b.GetValueD());
 	}
 }
 fraction operator*(const fraction& a, const fraction& b)
@@ -188,9 +205,17 @@ fraction operator*(const fraction& a, const fraction& b)
 		fraction ans(a.numerator*b.numerator, a.denominator*b.denominator);
 		return simplify(ans);
 	}
-	else
+	else if(a.isApprox && b.isApprox)
 	{
 		return fraction(a.value*b.value);
+	}
+	else if (!a.isApprox && b.isApprox)
+	{
+		return fraction(a.GetValueD() * b.value);
+	}
+	else
+	{
+		return fraction(a.value * b.GetValueD());
 	}
 }
 
@@ -204,10 +229,10 @@ fraction reciprocal(const fraction& a)
 		fraction ans(a.denominator, a.numerator);//The reciprocal.
 		return simplify(ans);
 	}
-	else
+	else//a.isApprox==true.
 	{
 		if (a.value.isZero())throw Exceptions(_Divide_By_Zero);
-		return fraction(Double((Int)1, 0) / a.value);
+		return fraction(Double_one / a.value);
 	}
 }
 
@@ -308,7 +333,6 @@ bool isInt(const fraction& frc)
 	if (temp.denominator == Int_one)return true;
 	else return false;
 }
-
 
 ostream& operator<<(ostream& ost, const fraction& frac)
 {

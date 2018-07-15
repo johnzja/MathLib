@@ -21,4 +21,13 @@ extern const char* _Function_Unidentified = "Error! Unidentified function spotte
 extern const char* _Math_Error = "Math error!";
 
 extern const char* _Brac_Error = "Brackets do not match!";
+extern const char* _Invalid_MatName = "Invalid Matrix name! Must be capital.";
+extern const char* _Unknown_Mat_Error = "Unknown matrix!";
+
+extern const char* _Invalid_Vector = "This is an invalid vector!";
+extern const char* _Vector_Dim_Umnatched = "Vector Dimension Unmatched!";
+
+extern const char* _Not_In_Conv_Radius = "Not in convergent radius!";
+
+
 

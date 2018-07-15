@@ -67,6 +67,17 @@ Matrix::Matrix(const Matrix& mat) :row(mat.row), column(mat.column)//the Copy Co
 	MatrixCount++;
 }
 
+void Matrix::AbortPreciseCalculation()
+{
+	ValidityCheck();
+	for (int i = 0;i < row;i++)
+	{
+		for (int j = 0;j < column;j++)
+		{
+			(*this)(i, j).AbortPreciseCalculation();
+		}
+	}
+}
 
 Matrix& Matrix::operator=(const Matrix& mat)
 {
@@ -87,8 +98,8 @@ Matrix& Matrix::operator=(const Matrix& mat)
 			{
 				for (int j = 0;j < column;j++)
 				{
-					if ((temp_ptr = dynamic_cast<fraction*>(&mat.ptr[i][j])) == nullptr)throw Exceptions(_Matrix_Pointer_Corrupted);
-					*temp_ptr = simplify(*temp_ptr);
+					if ((temp_ptr = (dynamic_cast<fraction*>(mat.ptr[i]) + j)) == nullptr)throw Exceptions(_Matrix_Pointer_Corrupted);
+					*(dynamic_cast<fraction*>(ptr[i]) + j) = simplify(*temp_ptr);
 				}
 			}
 		}
@@ -136,15 +147,15 @@ ostream& operator<<(ostream& ostr, const Matrix& mat)
 	int col = mat.GetColCnt();
 	for (int i = 0;i < row;i++)
 	{
+		ostr << '[';
 		for (int j = 0;j < col;j++)
 		{
 			ostr << mat(i, j) << "   ";
 		}
-		ostr << endl;
+		ostr << "  ]" << endl;
 	}
 	return ostr;
 }
-
 
 Matrix operator+(const Matrix& mat1, const Matrix& mat2)
 {
@@ -211,6 +222,12 @@ bool operator==(const Matrix& mat1, const Matrix& mat2)
 	}
 	return true;
 }
+
+bool operator!=(const Matrix& mat1, const Matrix& mat2)
+{
+	return !(mat1 == mat2);
+}
+
 
 Matrix reduce(const Matrix& mat, int DeleteCol, int DeleteRow)
 {
@@ -389,6 +406,35 @@ Matrix operator%(const Matrix& mat1, const Matrix& mat2)
 	return M;
 }
 
+Matrix pow(const Matrix& mat, int n)
+{
+	mat.ValidityCheck();
+	if (mat.GetRowCnt() != mat.GetColCnt())throw Exceptions(_Matrix_Size_Error);
+	if (n == 0)
+	{
+		return Identity(mat.GetRowCnt());
+	}
+	else if (n > 0)//Fast power Algorithm
+	{
+		Matrix  base = mat;
+		Matrix ans = Identity(mat.GetRowCnt());
+		int _n = n;
+
+		while (_n)
+		{
+			if (_n & 1)ans = ans * base;
+			base = base * base;
+			_n >>= 1;
+		}
+		return ans;
+	}
+	else
+	{
+		return pow(Ginverse(mat), -n);
+	}
+
+}
+
 Matrix Transpose(const Matrix& mat)
 {
 	Matrix ans(mat.column, mat.row);
@@ -467,26 +513,26 @@ void Matrix::col_mult(int line, const fraction& rate)
 
 //Matrix GetCol/GetRow
 
-Matrix Matrix::GetRow(int Row)
+Matrix Matrix::GetRow(int Row)const
 {
 	LineValidity(this, true, Row);//Check if the variable Row is legal.
 
 	Matrix ans(1, column);
 	for (int j = 0;j < column;j++)
 	{
-		this->operator()(0, j) = this->operator()(Row, j);	//Copy the data.
+		ans.operator()(0, j) = this->operator()(Row, j);	//Copy the data.
 	}
 	return ans;
 }
 
-Matrix Matrix::GetColumn(int Column)
+Matrix Matrix::GetColumn(int Column)const 
 {
 	LineValidity(this, false, Column);//Check if the variable Row is legal.
 
 	Matrix ans(row, 1);
 	for (int i = 0;i < row;i++)
 	{
-		this->operator()(i, 0) = this->operator()(i, 0);	//Copy the data.
+		ans.operator()(i, 0) = this->operator()(i, Column);	//Copy the data.
 	}
 	return ans;
 }
@@ -729,7 +775,7 @@ Matrix Ginverse(const Matrix& mat)
 	return E;
 }
 
-int Matrix::rank()
+int Matrix::rank()const
 {
 	//it is unnecessary to check matrix validity.
 	int rank_value;
